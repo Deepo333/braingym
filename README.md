@@ -20,12 +20,17 @@ Then open `http://localhost:8080` in a browser.
 
 ## Put it on your iPhone home screen
 
-1. Host the files somewhere reachable over HTTPS from your phone — the easiest free option is **GitHub Pages**:
-   - In this repo on GitHub: **Settings → Pages → Deploy from a branch**, pick this branch and the `/ (root)` folder, save.
-   - GitHub will give you a URL like `https://<your-username>.github.io/braingym/`.
-2. Open that URL in **Safari** on your iPhone (it must be Safari — other browsers don't support this).
-3. Tap the **Share** icon, then **Add to Home Screen**.
-4. Open Bloom from your home screen — it launches full-screen, like a native app.
+This repo deploys itself to **GitHub Pages** automatically via `.github/workflows/deploy-pages.yml` on every push to `main` — no manual setup needed. Once merged, the app is live at:
+
+```
+https://deepo333.github.io/braingym/
+```
+
+(Check the repo's **Actions** tab for the "Deploy to GitHub Pages" run, and **Settings → Pages** for the exact URL once it's live.)
+
+1. Open that URL in **Safari** on your iPhone (it must be Safari — other browsers don't support this).
+2. Tap the **Share** icon, then **Add to Home Screen**.
+3. Open Bloom from your home screen — it launches full-screen, like a native app.
 
 Your placement results, current level, and full lesson history are stored locally in that Safari installation (via `localStorage`), so they'll be there every time you open the app — nothing is uploaded anywhere.
 
