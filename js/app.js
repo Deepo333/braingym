@@ -49,6 +49,10 @@
   }
   function letterFor(i){ return String.fromCharCode(65 + i); }
   function pctColorClass(pct){ return pct >= 75 ? "" : pct >= 50 ? "mid" : "low"; }
+  function isStandalone(){
+    return (window.navigator.standalone === true) ||
+      (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+  }
 
   /* ---------------- passages lookup ---------------- */
   const PASSAGES = {};
@@ -62,8 +66,9 @@
   let activeLesson = load("activeLesson", null);
   let history = load("history", []);
   let lastLessonResult = load("lastLessonResult", null);
+  let dismissedStandaloneNotice = load("dismissedStandaloneNotice", false);
 
-  let view = "welcome";
+  let view = "home";
   let viewParams = {};
   let selectedDuration = 10;
   let showSettings = false;
@@ -77,6 +82,7 @@
     if(main) main.scrollTop = 0;
     window.scrollTo(0, 0);
   }
+  function goHome(){ navigate("home"); }
 
   /* ---------------- placement test ---------------- */
   function startPlacement(){
@@ -88,6 +94,11 @@
     };
     save("placementProgress", placementProgress);
     navigate("placement");
+  }
+  function openPlacement(){
+    if(placementResult){ navigate("placement-result"); }
+    else if(placementProgress){ navigate("placement"); }
+    else { startPlacement(); }
   }
   function selectPlacementAnswer(idx){
     placementProgress.answers[placementProgress.currentIndex] = idx;
@@ -178,6 +189,10 @@
     });
   }
   function goLessonSetup(){ navigate("lesson-setup"); }
+  function openLessons(){
+    if(!placementResult) return;
+    navigate("lesson-setup");
+  }
   function beginLesson(minutes){
     const count = computeQuestionCount(minutes);
     const questions = drawQuestions(moduleLevel, count);
@@ -253,10 +268,6 @@
     render();
   }
   function resumeActiveLesson(){ navigate("lesson"); }
-  function abandonActiveLesson(){
-    activeLesson = null; save("activeLesson", null);
-    navigate("dashboard");
-  }
 
   /* ---------------- history ---------------- */
   function openHistory(){ navigate("history"); }
@@ -281,7 +292,12 @@
     placementResult = null; placementProgress = null; moduleLevel = null;
     activeLesson = null; history = []; lastLessonResult = null;
     showSettings = false;
-    navigate("welcome");
+    navigate("home");
+  }
+  function dismissStandaloneNotice(){
+    dismissedStandaloneNotice = true;
+    save("dismissedStandaloneNotice", true);
+    render();
   }
 
   /* ---------------- derived stats ---------------- */
@@ -306,7 +322,7 @@
   function svgIcon(name){
     const icons = {
       gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg>',
-      back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+      home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5L12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-9"/><path d="M9.5 20v-6a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v6"/></svg>',
       close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>',
       chev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>',
       check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>',
@@ -318,11 +334,11 @@
   }
   function headerBar(opts){
     opts = opts || {};
-    let left = "";
-    if(opts.back){
-      left = '<button class="icon-btn" data-action="' + opts.back + '" aria-label="Back">' + svgIcon("back") + "</button>";
-    } else {
+    let left;
+    if(opts.isHome){
       left = '<div class="brand"><div class="brand-mark">' + svgIcon("bloom") + '</div><span class="brand-name">Bloom</span></div>';
+    } else {
+      left = '<button class="icon-btn" data-action="go-home" aria-label="Home">' + svgIcon("home") + "</button>";
     }
     let right = opts.right || "";
     if(opts.gear){
@@ -363,40 +379,108 @@
     if(!p) return "";
     return '<div class="passage-box">' + esc(p) + "</div>";
   }
-
-  /* ================= RENDER: screens ================= */
-  function renderWelcome(){
-    return atmosphere() + headerBar({}) +
-      '<main id="app-main" class="app-main screen">' +
-        '<div class="hero-card">' +
-          '<div class="eyebrow">Your writing companion</div>' +
-          '<h1 class="title-lg" style="margin-top:8px;">Let\'s find your starting point</h1>' +
-          '<p class="sub" style="color:rgba(255,255,255,.92); margin-top:10px;">A quick 40-question placement test shapes everything that follows — no pressure, no timer, and you can pause anytime and pick back up later.</p>' +
-        "</div>" +
-        '<div class="card stack">' +
-          '<div class="stack-sm">' +
-            '<div class="row-between"><span class="pill pill-amethyst">1</span><p style="flex:1">A mix of sentence errors, word choice, vocabulary, and short reading passages.</p></div>' +
-            '<div class="row-between"><span class="pill pill-rose">2</span><p style="flex:1">Takes most people 25–35 minutes — split it across sittings if you like.</p></div>' +
-            '<div class="row-between"><span class="pill pill-lime">3</span><p style="flex:1">You\'ll get a personalized level and a Grammar &amp; Punctuation module built for you.</p></div>' +
-          "</div>" +
-          '<button class="btn btn-primary" data-action="start-placement">Begin placement test</button>' +
-        "</div>" +
-      "</main>";
+  function navCard(opts){
+    // opts: {title, subtitle, buttonLabel, action, primary, locked, extra}
+    const wrapStyle = opts.locked ? ' style="opacity:.65;"' : "";
+    const btn = opts.locked
+      ? '<button type="button" class="btn btn-outline" disabled>' + esc(opts.buttonLabel) + "</button>"
+      : '<button type="button" class="btn ' + (opts.primary ? "btn-primary" : "btn-secondary") + '" data-action="' + opts.action + '">' + esc(opts.buttonLabel) + "</button>";
+    return '<div class="card stack-sm"' + wrapStyle + '>' +
+      '<h3 class="title-md">' + esc(opts.title) + "</h3>" +
+      '<p class="sub">' + opts.subtitle + "</p>" +
+      btn +
+      (opts.extra || "") +
+    "</div>";
+  }
+  function renderStandaloneNotice(){
+    return '<div class="card-soft row-between" style="border-color:var(--beige-deep);">' +
+      '<p class="sub" style="flex:1; padding-right:8px;">You\'re using Bloom in Safari — for one consistent place to pick up where you left off, add it to your home screen instead.</p>' +
+      '<button class="icon-btn" data-action="dismiss-standalone-notice" aria-label="Dismiss">' + svgIcon("close") + "</button>" +
+    "</div>";
   }
 
-  function renderPlacementResume(){
-    const answered = placementProgress.answers.filter(function(a){ return a !== null; }).length;
-    const pct = Math.round((answered / placementProgress.order.length) * 100);
-    return atmosphere() + headerBar({}) +
+  /* ================= RENDER: screens ================= */
+  function renderHome(){
+    const streak = computeStreak();
+    const avg = computeAvgScore();
+
+    let greetTitle, greetBody;
+    if(placementResult){
+      greetTitle = "Ready for today's practice?";
+      greetBody = "Level " + placementResult.level + " · " + esc(LEVEL_NAMES[placementResult.level]) +
+        (streak > 0 ? " — " + streak + " day" + (streak === 1 ? "" : "s") + " in a row" : "");
+    } else if(placementProgress){
+      greetTitle = "Pick up where you left off";
+      greetBody = "Your placement test is waiting for you.";
+    } else {
+      greetTitle = "Let's find your starting point";
+      greetBody = "Everything here starts with a quick placement test.";
+    }
+
+    const notice = (!isStandalone() && !dismissedStandaloneNotice) ? renderStandaloneNotice() : "";
+    const lessonBanner = activeLesson ? (
+      '<div class="card-soft row-between" style="border-color:var(--amethyst-deep);">' +
+        '<div><p style="font-weight:800;">Lesson in progress</p><p class="sub">Question ' + (activeLesson.index + 1) + " of " + activeLesson.questions.length + "</p></div>" +
+        '<button class="btn btn-primary btn-sm" data-action="resume-lesson">Resume</button>' +
+      "</div>"
+    ) : "";
+
+    let placementSub, placementBtnLabel, placementExtra = "";
+    if(placementResult){
+      placementSub = "Level " + placementResult.level + " · " + esc(placementResult.levelName) + " · completed " + formatDate(placementResult.completedAt);
+      placementBtnLabel = "Review results";
+      placementExtra = '<button type="button" class="btn-ghost btn-sm" data-action="retake-placement" style="margin:0 auto;">Retake test</button>';
+    } else if(placementProgress){
+      const answered = placementProgress.answers.filter(function(a){ return a !== null; }).length;
+      placementSub = answered + " of " + placementProgress.order.length + " questions complete";
+      placementBtnLabel = "Resume placement test";
+      placementExtra = '<button type="button" class="btn-ghost btn-sm" data-action="restart-placement" style="margin:0 auto;">Start over instead</button>';
+    } else {
+      placementSub = "40 questions · about 25–35 minutes, pause anytime.";
+      placementBtnLabel = "Begin placement test";
+    }
+    const placementCard = navCard({
+      title: "1 · Placement test", subtitle: placementSub, buttonLabel: placementBtnLabel,
+      action: "open-placement", primary: !placementResult, extra: placementExtra
+    });
+
+    const lessonsLocked = !placementResult;
+    const lessonsCard = navCard({
+      title: "2 · My lessons",
+      subtitle: lessonsLocked
+        ? "Complete your placement test to unlock this module."
+        : "Grammar &amp; Punctuation · Level " + moduleLevel + " · " + esc(LEVEL_NAMES[moduleLevel]),
+      buttonLabel: lessonsLocked ? "Locked for now" : "Start a lesson",
+      action: "open-lessons", primary: true, locked: lessonsLocked
+    });
+
+    const historyCard = navCard({
+      title: "3 · Lesson history",
+      subtitle: history.length
+        ? (history.length + " lesson" + (history.length === 1 ? "" : "s") + " completed · " + avg + "% average score")
+        : "No lessons yet — your history will show up here.",
+      buttonLabel: "View history", action: "open-history"
+    });
+
+    return atmosphere() + headerBar({ isHome:true, gear:true }) +
       '<main id="app-main" class="app-main screen">' +
-        '<div class="card center stack">' +
-          '<div class="level-ring" style="--pct:' + pct + '; margin:0 auto;"><div class="level-ring-inner"><span class="n">' + pct + '%</span><span class="l">DONE</span></div></div>' +
-          '<h2 class="title-md">Welcome back</h2>' +
-          '<p class="sub">You\'ve answered ' + answered + ' of ' + placementProgress.order.length + ' placement questions. Pick up right where you left off.</p>' +
-          '<button class="btn btn-primary" data-action="resume-placement">Resume placement test</button>' +
-          '<button class="btn btn-ghost btn-sm" data-action="restart-placement" style="margin:0 auto;">Start over instead</button>' +
+        notice +
+        lessonBanner +
+        '<div class="hero-card">' +
+          '<div class="eyebrow">Bloom</div>' +
+          '<h1 class="title-lg" style="margin-top:6px;">' + esc(greetTitle) + "</h1>" +
+          '<p class="sub" style="color:rgba(255,255,255,.92); margin-top:8px;">' + greetBody + "</p>" +
         "</div>" +
-      "</main>";
+        '<div class="stack">' + placementCard + lessonsCard + historyCard + "</div>" +
+        (placementResult ? (
+          '<div class="stat-grid">' +
+            '<div class="stat-tile"><div class="num">' + streak + '</div><div class="lbl">DAY STREAK</div></div>' +
+            '<div class="stat-tile"><div class="num">' + history.length + '</div><div class="lbl">LESSONS DONE</div></div>' +
+            '<div class="stat-tile"><div class="num">' + (history.length ? avg + "%" : "—") + '</div><div class="lbl">AVG SCORE</div></div>' +
+          "</div>"
+        ) : "") +
+      "</main>" +
+      (showSettings ? renderSettingsSheet() : "");
   }
 
   function renderPlacement(){
@@ -405,7 +489,7 @@
     const selected = placementProgress.answers[idx];
     const isLast = idx === placementProgress.order.length - 1;
     return atmosphere() +
-      headerBar({ back: "pause-placement" }) +
+      headerBar({}) +
       '<main id="app-main" class="app-main screen">' +
         progressBar(idx + 1, placementProgress.order.length) +
         '<div class="card stack">' +
@@ -443,41 +527,11 @@
           }).join("") + "</div>" +
           '<p class="sub">Strongest: <strong style="color:var(--ink)">' + esc(r.breakdown[0].name) + "</strong> · Focus next on <strong style=\"color:var(--ink)\">" + esc(r.breakdown[r.breakdown.length-1].name) + "</strong></p>" +
         "</div>" +
-        '<button class="btn btn-primary" data-action="go-dashboard">Unlock Grammar &amp; Punctuation</button>' +
+        '<div class="btn-row">' +
+          '<button class="btn btn-outline" data-action="retake-placement">Retake test</button>' +
+          '<button class="btn btn-primary" data-action="go-home">Back to home</button>' +
+        "</div>" +
       "</main>";
-  }
-
-  function renderDashboard(){
-    const streak = computeStreak();
-    const avg = computeAvgScore();
-    const pct = Math.round((moduleLevel / 5) * 100);
-    const resumeBanner = activeLesson ? (
-      '<div class="card-soft row-between" style="border-color:var(--amethyst-deep);">' +
-        '<div><p style="font-weight:800;">Lesson in progress</p><p class="sub">Question ' + (activeLesson.index + 1) + " of " + activeLesson.questions.length + "</p></div>" +
-        '<button class="btn btn-primary btn-sm" data-action="resume-lesson">Resume</button>' +
-      "</div>"
-    ) : "";
-    return atmosphere() + headerBar({ gear:true }) +
-      '<main id="app-main" class="app-main screen">' +
-        resumeBanner +
-        '<div class="hero-card">' +
-          '<div class="row-between" style="align-items:flex-start;">' +
-            '<div><div class="eyebrow">Your module</div><h2 class="title-lg" style="margin-top:6px;">Grammar &amp; Punctuation</h2></div>' +
-            '<div class="level-ring" style="--pct:' + pct + '; background: conic-gradient(#fff calc(' + pct + '*1%), rgba(255,255,255,.35) 0);">' +
-              '<div class="level-ring-inner" style="background:rgba(255,255,255,.98);"><span class="n" style="color:var(--amethyst-deep)">L' + moduleLevel + '</span><span class="l" style="color:var(--ink-soft)">' + esc(LEVEL_NAMES[moduleLevel].toUpperCase()) + "</span></div>" +
-            "</div>" +
-          "</div>" +
-          '<p class="sub" style="color:rgba(255,255,255,.92); margin-top:12px;">' + esc(LEVEL_BLURB[moduleLevel]) + "</p>" +
-          '<button class="btn" style="background:#fff; color:var(--amethyst-deep); margin-top:16px; box-shadow:0 10px 22px -10px rgba(0,0,0,.25);" data-action="go-lesson-setup">Start a lesson</button>' +
-        "</div>" +
-        '<div class="stat-grid">' +
-          '<div class="stat-tile"><div class="num">' + streak + '</div><div class="lbl">DAY STREAK</div></div>' +
-          '<div class="stat-tile"><div class="num">' + history.length + '</div><div class="lbl">LESSONS DONE</div></div>' +
-          '<div class="stat-tile"><div class="num">' + (history.length ? avg + "%" : "—") + '</div><div class="lbl">AVG SCORE</div></div>' +
-        "</div>" +
-        '<button class="btn btn-secondary" data-action="open-history">Review lesson history</button>' +
-      "</main>" +
-      (showSettings ? renderSettingsSheet() : "");
   }
 
   function renderSettingsSheet(){
@@ -492,7 +546,7 @@
 
   function renderLessonSetup(){
     const count = computeQuestionCount(selectedDuration);
-    return atmosphere() + headerBar({ back: "go-dashboard" }) +
+    return atmosphere() + headerBar({}) +
       '<main id="app-main" class="app-main screen">' +
         '<div class="stack-sm"><span class="eyebrow">Grammar &amp; Punctuation · Level ' + moduleLevel + "</span><h1 class=\"title-lg\">Set up your lesson</h1></div>" +
         '<div class="card stack">' +
@@ -525,7 +579,7 @@
       "</div>";
     }
     return atmosphere() +
-      headerBar({ back: "abandon-lesson" }) +
+      headerBar({}) +
       '<main id="app-main" class="app-main screen">' +
         progressBar(idx + 1, activeLesson.questions.length) +
         '<div class="card stack">' +
@@ -573,7 +627,7 @@
         "</div>" +
         suggestion +
         '<div class="btn-row">' +
-          '<button class="btn btn-outline" data-action="go-dashboard">Dashboard</button>' +
+          '<button class="btn btn-outline" data-action="go-home">Home</button>' +
           '<button class="btn btn-primary" data-action="repeat-lesson">Repeat lesson</button>' +
         "</div>" +
       "</main>";
@@ -581,12 +635,12 @@
 
   function renderHistory(){
     if(!history.length){
-      return atmosphere() + headerBar({ back: "go-dashboard" }) +
+      return atmosphere() + headerBar({}) +
         '<main id="app-main" class="app-main screen">' +
           '<div class="empty-state"><div class="emoji">📔</div><h3 class="title-md">No lessons yet</h3><p class="sub">Finish your first lesson and it’ll show up here.</p></div>' +
         "</main>";
     }
-    return atmosphere() + headerBar({ back: "go-dashboard" }) +
+    return atmosphere() + headerBar({}) +
       '<main id="app-main" class="app-main screen">' +
         '<h1 class="title-lg">Lesson history</h1>' +
         '<div class="list">' + history.map(function(h){
@@ -602,7 +656,7 @@
 
   function renderHistoryDetail(){
     const r = viewParams.record;
-    return atmosphere() + headerBar({ back: "open-history" }) +
+    return atmosphere() + headerBar({}) +
       '<main id="app-main" class="app-main screen">' +
         '<div class="stack-sm">' +
           '<span class="eyebrow">' + formatDate(r.date) + " · Level " + r.level + "</span>" +
@@ -625,17 +679,15 @@
     const root = document.getElementById("app");
     let html;
     switch(view){
-      case "welcome": html = renderWelcome(); break;
-      case "placement-resume": html = renderPlacementResume(); break;
+      case "home": html = renderHome(); break;
       case "placement": html = renderPlacement(); break;
       case "placement-result": html = renderPlacementResult(); break;
-      case "dashboard": html = renderDashboard(); break;
       case "lesson-setup": html = renderLessonSetup(); break;
       case "lesson": html = renderLesson(); break;
       case "lesson-result": html = renderLessonResult(); break;
       case "history": html = renderHistory(); break;
       case "history-detail": html = renderHistoryDetail(); break;
-      default: html = renderWelcome();
+      default: html = renderHome();
     }
     root.innerHTML = '<div class="app-shell">' + html + "</div>";
   }
@@ -647,26 +699,24 @@
     const action = el.getAttribute("data-action");
     const index = el.getAttribute("data-index");
     switch(action){
-      case "start-placement": startPlacement(); break;
-      case "resume-placement": navigate("placement"); break;
+      case "go-home": goHome(); break;
+      case "open-placement": openPlacement(); break;
       case "restart-placement":
         if(window.confirm("Start the placement test over from question 1?")) restartPlacement();
         break;
-      case "pause-placement": navigate("placement-resume"); break;
       case "select-placement": selectPlacementAnswer(parseInt(index, 10)); break;
       case "next-placement": nextPlacementQuestion(); break;
       case "prev-placement": prevPlacementQuestion(); break;
-      case "go-dashboard": navigate("dashboard"); break;
       case "open-settings": toggleSettings(true); break;
       case "close-settings": toggleSettings(false); break;
       case "retake-placement": confirmRetakePlacement(); break;
       case "reset-all": confirmResetAll(); break;
-      case "go-lesson-setup": goLessonSetup(); break;
+      case "dismiss-standalone-notice": dismissStandaloneNotice(); break;
+      case "open-lessons": openLessons(); break;
       case "begin-lesson": beginLesson(selectedDuration); break;
       case "select-lesson": selectLessonAnswer(parseInt(index, 10)); break;
       case "next-lesson": nextLessonQuestion(); break;
       case "resume-lesson": resumeActiveLesson(); break;
-      case "abandon-lesson": navigate("dashboard"); break;
       case "repeat-lesson": repeatLesson(); break;
       case "level-up": adjustModuleLevel(1); break;
       case "level-down": adjustModuleLevel(-1); break;
@@ -684,13 +734,10 @@
 
   /* ================= boot ================= */
   function boot(){
-    if(placementResult){
-      navigate("dashboard");
-    } else if(placementProgress){
-      navigate("placement-resume");
-    } else {
-      navigate("welcome");
-    }
+    // Home is always the landing screen, regardless of saved progress or
+    // how the app was launched (Safari tab vs. home-screen icon), so the
+    // app opens the same way every time.
+    navigate("home");
     if("serviceWorker" in navigator){
       window.addEventListener("load", function(){
         navigator.serviceWorker.register("sw.js").catch(function(){ /* offline caching is optional */ });
