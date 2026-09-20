@@ -71,6 +71,10 @@
   let history = load("history", []);
   let lastLessonResult = load("lastLessonResult", null);
   let dismissedStandaloneNotice = load("dismissedStandaloneNotice", false);
+  let profile = load("profile", null);
+  let profileError = "";
+  let profileFormAge = profile ? String(profile.age) : "";
+  let profileFormEducation = profile ? profile.education : "";
 
   if(placementProgress && (
     !placementProgress.sequence || !placementProgress.categoryDifficulty || !placementProgress.categoryDisplayDifficulty || !placementProgress.displaySnapshot ||
@@ -95,6 +99,33 @@
     window.scrollTo(0, 0);
   }
   function goHome(){ navigate("home"); }
+
+  /* ---------------- profile (collected once before each placement attempt) ---------------- */
+  const EDUCATION_LEVELS = ["High school diploma or GED","Some college","Associate degree","Bachelor's degree","Master's degree","Doctoral degree"];
+  function submitProfile(){
+    const ageEl = document.getElementById("profile-age");
+    const eduEl = document.getElementById("profile-education");
+    const ageRaw = ageEl ? ageEl.value.trim() : "";
+    const ageNum = parseInt(ageRaw, 10);
+    const eduVal = eduEl ? eduEl.value : "";
+    // Preserve whatever was entered across a validation-error re-render.
+    profileFormAge = ageRaw;
+    profileFormEducation = eduVal;
+    if(!ageRaw || isNaN(ageNum) || ageNum < 5 || ageNum > 120){
+      profileError = "Please enter a valid age between 5 and 120.";
+      render();
+      return;
+    }
+    if(!EDUCATION_LEVELS.includes(eduVal)){
+      profileError = "Please select your highest level of education.";
+      render();
+      return;
+    }
+    profileError = "";
+    profile = { age: ageNum, education: eduVal };
+    save("profile", profile);
+    startPlacement();
+  }
 
   /* ---------------- placement test ---------------- */
   // Adaptive: each category tracks its own difficulty independently (1-10,
@@ -171,10 +202,16 @@
     save("placementProgress", placementProgress);
     navigate("placement");
   }
+  function openProfileScreen(){
+    profileError = "";
+    profileFormAge = profile ? String(profile.age) : "";
+    profileFormEducation = profile ? profile.education : "";
+    navigate("profile");
+  }
   function openPlacement(){
     if(placementResult){ navigate("placement-result"); }
     else if(placementProgress){ navigate("placement"); }
-    else { startPlacement(); }
+    else { openProfileScreen(); }
   }
   function selectPlacementAnswer(idx){
     placementProgress.answers[placementProgress.currentIndex] = idx;
@@ -260,7 +297,7 @@
   }
   function restartPlacement(){
     placementProgress = null; save("placementProgress", null);
-    startPlacement();
+    openProfileScreen();
   }
 
   /* ---------------- lesson ---------------- */
@@ -381,7 +418,7 @@
     placementResult = null; save("placementResult", null);
     placementProgress = null; save("placementProgress", null);
     showSettings = false;
-    startPlacement();
+    openProfileScreen();
   }
   function confirmResetAll(){
     if(!window.confirm("Reset all progress? This clears your placement result, level, and full lesson history. This can't be undone.")) return;
@@ -580,6 +617,36 @@
       (showSettings ? renderSettingsSheet() : "");
   }
 
+  function renderProfile(){
+    const savedAge = profileFormAge;
+    const savedEdu = profileFormEducation;
+    return atmosphere() + headerBar({}) +
+      '<main id="app-main" class="app-main screen">' +
+        '<div class="stack-sm">' +
+          '<span class="eyebrow">Before you begin</span>' +
+          '<h1 class="title-lg">Quick profile</h1>' +
+          '<p class="sub">Just two questions — this helps put your results in context.</p>' +
+        "</div>" +
+        '<div class="card stack">' +
+          (profileError ? '<div class="card-soft" style="border-color:var(--danger-bg); color:var(--danger);">' + esc(profileError) + "</div>" : "") +
+          '<div class="field">' +
+            '<label for="profile-age">Your age</label>' +
+            '<input type="number" id="profile-age" class="text-input" inputmode="numeric" min="5" max="120" placeholder="e.g. 34" value="' + esc(savedAge) + '" />' +
+          "</div>" +
+          '<div class="field">' +
+            '<label for="profile-education">Highest level of education completed</label>' +
+            '<select id="profile-education" class="select">' +
+              '<option value="" ' + (savedEdu ? "" : "selected") + " disabled>Select one</option>" +
+              EDUCATION_LEVELS.map(function(level){
+                return '<option value="' + esc(level) + '" ' + (level === savedEdu ? "selected" : "") + ">" + esc(level) + "</option>";
+              }).join("") +
+            "</select>" +
+          "</div>" +
+          '<button class="btn btn-primary" data-action="submit-profile">Continue to placement test</button>' +
+        "</div>" +
+      "</main>";
+  }
+
   function renderPlacement(){
     const idx = placementProgress.currentIndex;
     const q = PLACEMENT_BY_ID[placementProgress.order[idx]];
@@ -618,6 +685,7 @@
           '<h1 class="title-lg">' + esc(r.levelName) + "</h1>" +
           '<p class="sub" style="color:rgba(255,255,255,.92); margin-top:6px;">' + esc(LEVEL_BLURB[r.level]) + "</p>" +
           '<p style="margin-top:14px; font-weight:800; color:#fff;">' + r.correct + " / " + r.total + " correct (" + r.scorePercent + "%)</p>" +
+          (profile ? '<p class="sub" style="color:rgba(255,255,255,.8); margin-top:8px; font-size:.82rem;">Age ' + esc(profile.age) + " · " + esc(profile.education) + "</p>" : "") +
         "</div>" +
         '<div class="card stack">' +
           '<h3 class="title-md">Strengths &amp; growth areas</h3>' +
@@ -780,6 +848,7 @@
     let html;
     switch(view){
       case "home": html = renderHome(); break;
+      case "profile": html = renderProfile(); break;
       case "placement": html = renderPlacement(); break;
       case "placement-result": html = renderPlacementResult(); break;
       case "lesson-setup": html = renderLessonSetup(); break;
@@ -801,6 +870,7 @@
     switch(action){
       case "go-home": goHome(); break;
       case "open-placement": openPlacement(); break;
+      case "submit-profile": submitProfile(); break;
       case "restart-placement":
         if(window.confirm("Start the placement test over from question 1?")) restartPlacement();
         break;
