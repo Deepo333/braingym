@@ -532,6 +532,19 @@ select.select{
   font-size:1rem;
   font-weight:700;
 }
+input.text-input{
+  width:100%;
+  padding:14px 16px;
+  border-radius: var(--radius-sm);
+  border:1.5px solid var(--border);
+  background-color: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size:1rem;
+  font-weight:700;
+  box-sizing: border-box;
+}
+input.text-input::placeholder{ color: var(--ink-soft); font-weight:600; }
 
 /* ---------- history list ---------- */
 .list{ display:flex; flex-direction:column; gap:10px; }
