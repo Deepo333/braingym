@@ -283,6 +283,131 @@ const PLACEMENT_POOL = [
     options:["NO CHANGE","Although the city council debated the zoning proposal for three hours, the mayor ultimately vetoed it the following week.","The city council debated the zoning proposal for three hours, and the mayor ultimately vetoed it the following week.","The city council debating the zoning proposal for three hours, the mayor ultimately vetoed it the following week."], correctIndex:2,
     explanation:"Since the two events are of roughly equal importance and stand in a simple sequential relationship, joining them with the coordinating conjunction \"and\" is most effective. \"Although\" is tempting since it also combines the sentences, but it wrongly implies an unexpected contrast between the debate and the veto that the sentence never establishes; the last option's participle \"debating\" implies the two events happened simultaneously, but \"the following week\" shows the debate concluded before the veto." },
 
+  { id:"gx1", type:"error", category:"error", sub:"Subject-Verb Agreement", difficulty:1,
+    prompt:"The dog and the cat ⟦chases⟧ each other around the yard every afternoon, much to the neighbors' amusement.",
+    options:["NO CHANGE","chase","is chasing","has chased"], correctIndex:1,
+    explanation:"The compound subject \"the dog and the cat,\" joined by \"and,\" is plural and requires the plural verb \"chase.\" \"is chasing\" and \"has chased\" are both singular-agreeing forms, so they repeat essentially the same agreement error as the original \"chases.\"" },
+
+  { id:"gx2", type:"error", category:"error", sub:"Subject-Verb Agreement", difficulty:5,
+    prompt:"The findings of the report, compiled after years of painstaking fieldwork, ⟦remains⟧ controversial among specialists.",
+    options:["NO CHANGE","remain","is remaining","has remained"], correctIndex:1,
+    explanation:"The true subject is the plural \"findings,\" not the nearer singular nouns \"report\" or \"fieldwork,\" so the plural verb \"remain\" is required. \"has remained\" is tempting because it echoes the nearby singular \"report,\" but that noun is only part of a prepositional phrase and cannot govern the verb." },
+
+  { id:"gx3", type:"error", category:"error", sub:"Subject-Verb Agreement", difficulty:9,
+    prompt:"What troubles regulators most about the proposed merger ⟦is⟧ the potential job losses and the resulting drop in regional tax revenue.",
+    options:["NO CHANGE","are","have been","were"], correctIndex:0,
+    explanation:"The subject is the singular noun clause \"What troubles regulators most about the proposed merger,\" so the singular verb \"is\" is correct as written, regardless of the plural-sounding complement that follows. \"are\" is tempting because it seems to agree with \"job losses,\" but a verb agrees with its subject, not with a complement on the other side of \"is.\"" },
+
+  { id:"gx4", type:"error", category:"error", sub:"Pronoun Agreement & Reference", difficulty:2,
+    prompt:"The committee members finished ⟦his⟧ report a day early, well before the deadline imposed by the board.",
+    options:["NO CHANGE","their","its","one's"], correctIndex:1,
+    explanation:"The antecedent \"committee members\" is plural, so it needs the plural pronoun \"their,\" not the singular \"his.\" \"its\" is tempting as another common pronoun, but it's reserved for a single non-personal antecedent, not a group of people." },
+
+  { id:"gx5", type:"error", category:"error", sub:"Pronoun Agreement & Reference", difficulty:6,
+    prompt:"The regulators delayed approval of the drug for nearly a year without citing specific concerns, ⟦which⟧ alarmed the company's investors.",
+    options:["NO CHANGE","a delay that","and this","it"], correctIndex:1,
+    explanation:"\"which\" has no single clear antecedent — it could seem to point to \"the drug\" or \"specific concerns\" — when the writer actually means the act of delaying itself, so replacing it with the concrete noun phrase \"a delay that\" removes the ambiguity. \"and this\" is tempting since \"this\" often sums up a whole preceding idea, but it's still a vague pronoun standing in for no clear noun, and it awkwardly turns the sentence into two coordinated clauses instead of one subordinate one." },
+
+  { id:"gx6", type:"error", category:"error", sub:"Pronoun Agreement & Reference", difficulty:10,
+    prompt:"The prize ultimately went to Dr. Alvarez, ⟦than whom⟧ no other researcher on the panel had published more extensively on coral bleaching.",
+    options:["NO CHANGE","than which","than who","than her"], correctIndex:0,
+    explanation:"\"than whom\" is the correct, if formal, construction here, since the pronoun functions as the object within the implied comparison \"no researcher had published more than whom [she had]\" — an established idiom for comparisons involving people — so the sentence is already correct. \"than who\" is tempting because \"who\" feels like the natural subject-sounding choice, but the pronoun is functioning as an object here, which calls for the objective \"whom.\"" },
+
+  { id:"gx7", type:"error", category:"error", sub:"Verb Tense Consistency", difficulty:1,
+    prompt:"Yesterday the technician ⟦repairs⟧ the printer before the morning meeting started.",
+    options:["NO CHANGE","repaired","has repaired","is repairing"], correctIndex:1,
+    explanation:"\"Yesterday\" signals a completed past action, so the simple past \"repaired\" is required rather than the present-tense \"repairs.\" \"has repaired\" is tempting since it also suggests completion, but the present perfect doesn't pair with a specific past-time marker like \"yesterday.\"" },
+
+  { id:"gx8", type:"error", category:"error", sub:"Verb Tense Consistency", difficulty:4,
+    prompt:"By the time the auditors arrived on site, the warehouse manager ⟦reorganizes⟧ the entire inventory system, which made the review go smoothly.",
+    options:["NO CHANGE","had reorganized","has reorganized","was reorganizing"], correctIndex:1,
+    explanation:"The reorganization was complete before the auditors' arrival, another past event, so the past perfect \"had reorganized\" is needed to mark the earlier action. \"was reorganizing\" is tempting because it's past tense, but the progressive wrongly implies the process was still underway when the auditors arrived." },
+
+  { id:"gx9", type:"error", category:"error", sub:"Verb Tense Consistency", difficulty:8,
+    prompt:"The attorney assured the jury that the defendant ⟦will testify⟧ the following day, once his medical condition had stabilized.",
+    options:["NO CHANGE","had testified","would testify","was testifying"], correctIndex:2,
+    explanation:"Because the reporting verb \"assured\" is past tense, the future action inside the indirect speech should backshift to \"would testify.\" \"had testified\" is tempting as a past form, but it wrongly implies the testimony was already finished before the attorney spoke, reversing the intended meaning." },
+
+  { id:"gx10", type:"error", category:"error", sub:"Parallel Structure", difficulty:3,
+    prompt:"The exhibition traces the sculptor's early charcoal sketches, her later bronze castings, and ⟦how she experimented with⟧ mixed media in her final decade.",
+    options:["NO CHANGE","her experimentation with","experimenting with","to experiment with"], correctIndex:1,
+    explanation:"The first two items in the list are possessive noun phrases (\"her early charcoal sketches,\" \"her later bronze castings\"), so the third item should match with another possessive noun phrase, \"her experimentation with.\" \"experimenting with\" is tempting because it echoes the verb \"experimented\" in the original, but a bare gerund doesn't match the possessive pattern set by the other two items." },
+
+  { id:"gx11", type:"error", category:"error", sub:"Parallel Structure", difficulty:7,
+    prompt:"The new regulation requires hospitals not only to report adverse drug reactions within 48 hours but also ⟦tracking them⟧ in a centralized database for at least five years.",
+    options:["NO CHANGE","they must track them","the tracking of them","to track them"], correctIndex:3,
+    explanation:"A \"not only...but also\" construction needs matching structures on both sides; since the first branch uses the infinitive \"to report,\" the second must match with \"to track them.\" \"the tracking of them\" is tempting because it reads smoothly on its own, but it shifts to a noun phrase that doesn't parallel the infinitive verb form the first branch establishes." },
+
+  { id:"gx12", type:"error", category:"error", sub:"Parallel Structure", difficulty:9,
+    prompt:"The treaty obligated the two nations to reduce their tariffs gradually, to open their ports to foreign vessels, to establish a joint commission for resolving disputes, and ⟦the abolition of⟧ all remaining trade restrictions within a decade.",
+    options:["NO CHANGE","abolishing","to abolish","having abolished"], correctIndex:2,
+    explanation:"All three preceding obligations are framed as parallel infinitives (\"to reduce,\" \"to open,\" \"to establish\"), so the fourth item must match with \"to abolish.\" \"abolishing\" is tempting since gerunds can substitute smoothly for infinitives in other contexts, but here it breaks the specific infinitive pattern already established by three prior items in the same list." },
+
+  { id:"gx13", type:"error", category:"error", sub:"Modifier Placement", difficulty:1,
+    prompt:"⟦Barking loudly all night⟧, the neighbors finally called the police about the dog.",
+    options:["NO CHANGE","Because the dog was barking loudly all night, the neighbors finally called the police.","Barking loudly all night, the police were finally called by the neighbors about the dog.","The neighbors finally called the police, barking loudly all night, about the dog."], correctIndex:1,
+    explanation:"As written, \"Barking loudly all night\" grammatically describes \"the neighbors,\" absurdly suggesting they were the ones barking; rephrasing with \"Because the dog was barking loudly all night\" gives the modifier its correct, explicit subject. The last option is tempting since it repositions the phrase, but placing it right before \"about the dog\" still leaves it ambiguously attached to \"the police\" or the act of calling, not to the dog." },
+
+  { id:"gx14", type:"error", category:"error", sub:"Modifier Placement", difficulty:5,
+    prompt:"⟦Students who study consistently improve⟧ their retention of new material over the course of a semester.",
+    options:["NO CHANGE","Consistently, students who study improve","Students who consistently study improve","Students, who study consistently, improve"], correctIndex:2,
+    explanation:"\"consistently\" sits ambiguously between \"study\" and \"improve,\" so it's unclear whether the sentence means studying consistently or improving consistently — a squinting modifier. \"Students who consistently study improve\" ties the word clearly to \"study.\" The last option is tempting since it also repositions the phrase, but setting the clause off with commas wrongly implies all students are being discussed, not just those who study." },
+
+  { id:"gx15", type:"error", category:"error", sub:"Modifier Placement", difficulty:10,
+    prompt:"⟦Its findings corroborated by three independent laboratories⟧, the research team's paper was accepted for publication without further peer review.",
+    options:["NO CHANGE","Having corroborated its findings with three independent laboratories","Corroborating its findings with three independent laboratories","With its findings, corroborated by three independent laboratories,"], correctIndex:0,
+    explanation:"\"Its findings corroborated by three independent laboratories\" is an absolute phrase with its own built-in subject, \"findings,\" so it doesn't need to agree with \"the research team's paper\" and is already correct. \"Having corroborated its findings with three independent laboratories\" looks like a natural fix, but it actually creates a dangling modifier, since it would now be the paper, not the findings, that grammatically did the corroborating." },
+
+  { id:"gx16", type:"error", category:"error", sub:"Run-ons & Comma Splices", difficulty:2,
+    prompt:"The experiment produced unexpected results⟦, the researchers repeated it twice to confirm accuracy⟧.",
+    options:["NO CHANGE",": the researchers repeated it twice to confirm accuracy","; the researchers repeated it twice to confirm accuracy","the researchers repeated it twice to confirm accuracy"], correctIndex:2,
+    explanation:"Both halves are independent clauses, so a semicolon is needed to join them without a coordinating conjunction; the original comma alone creates a splice. A colon is tempting since it too can join independent clauses, but a colon signals that the second clause explains the first, which doesn't fit here since repeating the experiment isn't an explanation of the results." },
+
+  { id:"gx17", type:"error", category:"error", sub:"Run-ons & Comma Splices", difficulty:6,
+    prompt:"The clinical trial met its enrollment target ahead of schedule⟦, the results nonetheless disappointed the pharmaceutical company's investors⟧.",
+    options:["NO CHANGE",". The results nonetheless disappointed the pharmaceutical company's investors","; the results nonetheless disappointing the pharmaceutical company's investors","the results nonetheless disappointed the pharmaceutical company's investors"], correctIndex:1,
+    explanation:"The comma alone creates a splice between two independent clauses, so ending the first with a period and capitalizing the second fixes it. The semicolon option is tempting since semicolons often join independent clauses, but changing \"disappointed\" to \"disappointing\" removes the finite verb, leaving a fragment a semicolon can't correctly join." },
+
+  { id:"gx18", type:"error", category:"error", sub:"Sentence Fragments", difficulty:3,
+    prompt:"The archaeologists spent months excavating the site. ⟦Uncovering pottery shards, coins, and fragments of a mosaic floor⟧.",
+    options:["NO CHANGE","They uncovered pottery shards, coins, and fragments of a mosaic floor","Uncovering pottery shards, coins, and fragments of a mosaic floor, which took months","With pottery shards, coins, and fragments of a mosaic floor uncovered"], correctIndex:1,
+    explanation:"\"Uncovering pottery shards, coins, and fragments of a mosaic floor\" has no subject or finite verb, making it a fragment; adding \"They uncovered\" supplies both and creates a complete sentence. The other alternatives are tempting since they rephrase the wording, but each still lacks a finite main verb governing a subject, so the fragment remains." },
+
+  { id:"gx19", type:"error", category:"error", sub:"Sentence Fragments", difficulty:7,
+    prompt:"The contractor missed the completion deadline by nearly six months. ⟦A delay that regulators attributed to persistent supply-chain disruptions rather than mismanagement⟧.",
+    options:["NO CHANGE","Regulators attributed the delay to persistent supply-chain disruptions rather than mismanagement","A delay, that regulators attributed to persistent supply-chain disruptions rather than mismanagement","Attributing the delay to persistent supply-chain disruptions rather than mismanagement"], correctIndex:1,
+    explanation:"\"A delay that regulators attributed to persistent supply-chain disruptions rather than mismanagement\" is just a noun phrase followed by a modifying relative clause, with no independent main verb, so it remains a fragment. \"Attributing the delay...\" is tempting because it rephrases the idea, but a participial phrase still lacks a finite verb and subject; only recasting \"regulators\" as the subject of \"attributed\" creates a complete sentence." },
+
+  { id:"gx20", type:"error", category:"error", sub:"Punctuation", difficulty:4,
+    prompt:"The contractor still needed⟦: permits, inspection reports, and signed waivers⟧ before construction could begin.",
+    options:["NO CHANGE","; permits, inspection reports, and signed waivers","permits, inspection reports, and signed waivers",", permits, inspection reports, and signed waivers"], correctIndex:2,
+    explanation:"A colon must follow a grammatically complete independent clause, but \"the contractor still needed\" is incomplete without its object, so the colon here is misused; removing it lets the list serve directly as the object of \"needed.\" A semicolon carries the same independent-clause requirement and fails for the same reason, and a comma is tempting as a lighter mark but still wrongly separates the verb from its direct object." },
+
+  { id:"gx21", type:"error", category:"error", sub:"Punctuation", difficulty:8,
+    prompt:"The board's decision made sense in hindsight⟦: the company's cash reserves had fallen dangerously low, and further delay risked insolvency⟧.",
+    options:["NO CHANGE",", the company's cash reserves had fallen dangerously low, and further delay risked insolvency","; the company's cash reserves had fallen dangerously low, and further delay risked insolvency",", and the company's cash reserves had fallen dangerously low, and further delay risked insolvency"], correctIndex:0,
+    explanation:"A colon is correct here because the second clause directly explains why the board's decision made sense — exactly the explanatory relationship a colon promises — so the sentence needs no change. The semicolon is tempting because both clauses are independent and a semicolon can join related independent clauses, but it signals only a general connection, not the specific explanatory relationship the colon captures; the comma options both create a splice, since a comma alone cannot join two independent clauses." },
+
+  { id:"gx22", type:"error", category:"error", sub:"Punctuation", difficulty:9,
+    prompt:"\"How,\" the journalist asked, ⟦\"could the agency possibly have missed such an obvious conflict of interest.\"⟧",
+    options:["NO CHANGE","\"could the agency possibly have missed such an obvious conflict of interest\"?","\"could the agency possibly have missed such an obvious conflict of interest?\"","'could the agency possibly have missed such an obvious conflict of interest?'"], correctIndex:2,
+    explanation:"The full quoted sentence is a question, so the question mark belongs inside the closing quotation marks, replacing the incorrect period. The second option is tempting because it does add a question mark, but placing it outside the quotation marks wrongly implies the question mark belongs to the frame sentence rather than to the quoted words themselves; the last option incorrectly swaps to single quotation marks, which are reserved for a quotation nested inside another quotation." },
+
+  { id:"gx23", type:"error", category:"error", sub:"Sentence Variety", difficulty:3,
+    prompt:"⟦The chef prepared the sauce first. She then seared the scallops.⟧",
+    options:["NO CHANGE","The chef prepared the sauce first, and then she seared the scallops, which took only a few minutes.","After preparing the sauce, the chef seared the scallops.","Preparing the sauce first, the scallops were then seared by the chef."], correctIndex:2,
+    explanation:"Combining the two short, choppy sentences with the subordinate opener \"After preparing the sauce\" efficiently shows the sequence while eliminating the repetitive structure. The first alternative is tempting since it also merges the ideas, but tacking on \"which took only a few minutes\" adds irrelevant filler not found in the original; the last option opens with a dangling modifier, since \"Preparing the sauce first\" should describe \"the chef,\" not \"the scallops.\"" },
+
+  { id:"gx24", type:"error", category:"error", sub:"Sentence Variety", difficulty:5,
+    prompt:"⟦The startup switched to a four-day workweek last year. Productivity metrics have remained essentially unchanged since then.⟧",
+    options:["NO CHANGE","The startup switched to a four-day workweek last year, productivity metrics have remained essentially unchanged since then.","Although the startup switched to a four-day workweek last year, productivity metrics have remained essentially unchanged since then.","Switching to a four-day workweek last year, productivity metrics have remained essentially unchanged at the startup."], correctIndex:2,
+    explanation:"\"Although\" effectively signals the mild contrast between an operational change and metrics staying essentially flat, combining the two short sentences into one well-subordinated sentence. The second option is tempting since it does merge the sentences, but it simply drops \"Although\" and joins two independent clauses with only a comma, creating a splice; the last option opens with a dangling modifier, since \"Switching to a four-day workweek\" should describe \"the startup,\" not \"productivity metrics.\"" },
+
+  { id:"gx25", type:"error", category:"error", sub:"Sentence Variety", difficulty:7,
+    prompt:"⟦Although the reservoir's water level had dropped to a record low, officials delayed imposing rationing for several more weeks, hoping seasonal rains would arrive in time.⟧",
+    options:["NO CHANGE","The reservoir's water level had dropped to a record low, officials delayed imposing rationing for several more weeks, hoping seasonal rains would arrive in time.","The reservoir's water level had dropped to a record low; therefore, officials delayed imposing rationing for several more weeks, hoping seasonal rains would arrive in time.","Dropping to a record low, officials delayed imposing rationing for several more weeks at the reservoir, hoping seasonal rains would arrive in time."], correctIndex:0,
+    explanation:"The original already uses effective subordination (\"Although\") to combine the contrasting ideas — a record-low water level yet delayed rationing — into one clear sentence, so it needs no change. The semicolon option is tempting since it's grammatically valid punctuation, but \"therefore\" wrongly frames the delay as a logical consequence of the low water level rather than the contrast it actually is; the last option opens with a dangling modifier, since \"Dropping to a record low\" should describe \"the reservoir's water level,\" not \"officials.\"" },
+
   /* ---- Word choice (50) ---- */
   { id:"wb1", type:"blank", category:"blank", sub:"Commonly Confused Words", difficulty:4,
     prompt:"Rather than quietly seeking a legal opinion, the startup chose to openly _____ the licensing requirement, daring regulators to intervene.",
@@ -534,6 +659,131 @@ const PLACEMENT_POOL = [
     options:["put in a good word for","give a shout-out to","recommend","root for"], correctIndex:2,
     explanation:"\"Recommend\" is the standard, formal verb for an official letter of recommendation. \"Put in a good word for,\" \"give a shout-out to,\" and \"root for\" are casual expressions inappropriate for formal academic correspondence." },
 
+  { id:"wx1", type:"blank", category:"blank", sub:"Commonly Confused Words", difficulty:1,
+    prompt:"The startup revamped _____ entire onboarding process last quarter.",
+    options:["it's","its","their","your"], correctIndex:1,
+    explanation:"\"Its\" is the possessive form of \"it\" and takes no apostrophe. \"It's\" is a contraction of \"it is\" or \"it has,\" which doesn't fit this possessive meaning." },
+
+  { id:"wx2", type:"blank", category:"blank", sub:"Commonly Confused Words", difficulty:2,
+    prompt:"Because the recipe was simplified, it now calls for _____ ingredients than the original version.",
+    options:["less","lesser","few","fewer"], correctIndex:3,
+    explanation:"\"Fewer\" is used with plural countable nouns like \"ingredients,\" while \"less\" is reserved for uncountable or singular amounts, such as \"less flour.\"" },
+
+  { id:"wx3", type:"blank", category:"blank", sub:"Commonly Confused Words", difficulty:4,
+    prompt:"After the long shift, all she wanted to do was _____ down on the couch and rest.",
+    options:["lay","lie","lain","laid"], correctIndex:1,
+    explanation:"\"Lie\" (lie, lay, lain) means to recline and takes no direct object. \"Lay\" (lay, laid, laid) means to place something down and requires an object, as in \"lay the book down.\"" },
+
+  { id:"wx4", type:"blank", category:"blank", sub:"Commonly Confused Words", difficulty:6,
+    prompt:"From the report's careful phrasing, the analysts _____ that layoffs were being considered, even though the document never said so directly.",
+    options:["implied","inferred","insinuated","intimated"], correctIndex:1,
+    explanation:"\"Infer\" means to draw a conclusion from evidence, which is what a reader does. \"Imply\" describes what the writer of the document would be doing by hinting at something, not what the analysts did in reading it." },
+
+  { id:"wx5", type:"blank", category:"blank", sub:"Commonly Confused Words", difficulty:9,
+    prompt:"His apology seemed _____, sincere and without any hidden agenda, which won back the trust of his teammates.",
+    options:["ingenious","disingenuous","ingenuous","unctuous"], correctIndex:2,
+    explanation:"\"Ingenuous\" means sincere, innocent, and without deception. It is easily confused with \"ingenious\" (clever, inventive) and \"disingenuous\" (insincere, deceptive), which mean something quite different or nearly opposite." },
+
+  { id:"wx6", type:"blank", category:"blank", sub:"Precision & Connotation", difficulty:2,
+    prompt:"When the waiter brought the wrong order a third time, the customer _____ at him without saying a word.",
+    options:["glanced","glared","peeked","gazed"], correctIndex:1,
+    explanation:"\"Glared\" conveys an angry, intense look that matches the customer's silent frustration. \"Glanced,\" \"peeked,\" and \"gazed\" all describe a neutral or gentle look, not an angry one." },
+
+  { id:"wx7", type:"blank", category:"blank", sub:"Precision & Connotation", difficulty:3,
+    prompt:"Unlike her rivals, who gave up after the first rejection, Maya kept submitting her manuscript for five years, a trait her mentor called admirably _____.",
+    options:["stubborn","persistent","pigheaded","willful"], correctIndex:1,
+    explanation:"\"Persistent\" casts continued effort in a positive light, matching \"admirably.\" \"Stubborn,\" \"pigheaded,\" and \"willful\" describe similar behavior but carry a negative or critical connotation." },
+
+  { id:"wx8", type:"blank", category:"blank", sub:"Precision & Connotation", difficulty:5,
+    prompt:"The merger talks were not merely difficult but _____, dragging on for over a year without any resolution.",
+    options:["lengthy","protracted","interminable","prolonged"], correctIndex:1,
+    explanation:"\"Protracted\" specifically suggests a process drawn out longer than necessary or expected, matching the frustration in the sentence. \"Lengthy\" is too neutral, and \"interminable\" (seemingly endless) overstates a process that did eventually end." },
+
+  { id:"wx9", type:"blank", category:"blank", sub:"Precision & Connotation", difficulty:7,
+    prompt:"The CEO's statement was carefully _____, technically accurate in every detail but phrased to avoid admitting any wrongdoing.",
+    options:["misleading","evasive","equivocal","ambiguous"], correctIndex:2,
+    explanation:"\"Equivocal\" describes language deliberately crafted to allow more than one interpretation, fitting a statement that is \"technically accurate\" yet designed to deceive. \"Ambiguous\" lacks that deliberate intent, and \"misleading\" doesn't capture the emphasis on technical accuracy." },
+
+  { id:"wx10", type:"blank", category:"blank", sub:"Precision & Connotation", difficulty:10,
+    prompt:"When the interviewer asked an unexpectedly personal question, the candidate looked _____ for a moment, unsure how to respond.",
+    options:["unfazed","blase","nonplussed","indifferent"], correctIndex:2,
+    explanation:"\"Nonplussed\" means so surprised or confused that one doesn't know how to react, the opposite of the common misuse suggesting calm indifference. \"Unfazed,\" \"blase,\" and \"indifferent\" all describe someone unbothered, which contradicts being \"unsure how to respond.\"" },
+
+  { id:"wx11", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:1,
+    prompt:"_____ employee must badge in before entering the server room.",
+    options:["Each and every","Every single","Each","Each individual"], correctIndex:2,
+    explanation:"\"Each\" alone is sufficient and precise. \"Each and every,\" \"every single,\" and \"each individual\" all add extra words that repeat a meaning already contained in \"each.\"" },
+
+  { id:"wx12", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:3,
+    prompt:"The two departments decided to _____ their budgets into a single fund.",
+    options:["combine together","unify as one","combine","join up together"], correctIndex:2,
+    explanation:"\"Combine\" already means to bring together, so adding \"together,\" \"as one,\" or \"up together\" restates an idea the verb already expresses, making the phrase redundant." },
+
+  { id:"wx13", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:5,
+    prompt:"The report's conclusion simply _____ what the introduction had already said, without adding any new evidence.",
+    options:["reiterated again","recapped back","restated","repeated over again"], correctIndex:2,
+    explanation:"\"Restated\" conveys the idea cleanly. \"Reiterated again\" is redundant because \"reiterate\" already means to say again, and \"recapped back\" and \"repeated over again\" contain similar built-in repetition." },
+
+  { id:"wx14", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:8,
+    prompt:"After hours of debate, the board finally reached a _____ to postpone the product launch.",
+    options:["general consensus","unanimous consensus","consensus","mutual consensus"], correctIndex:2,
+    explanation:"\"Consensus\" already means general agreement among a group, so pairing it with \"general,\" \"unanimous,\" or \"mutual\" is redundant, even though these phrases are extremely common in everyday speech." },
+
+  { id:"wx15", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:9,
+    prompt:"Given the sensitive nature of the data, the auditors were asked to _____ every transaction from the past year.",
+    options:["look at very closely and carefully","scrutinize","go over again in painstaking detail","examine down to the very last detail"], correctIndex:1,
+    explanation:"\"Scrutinize\" precisely means to examine closely and carefully in a single word. The other options pad the same meaning into wordy phrases that a concise writer would trim." },
+
+  { id:"wx16", type:"blank", category:"blank", sub:"Idiomatic Usage", difficulty:4,
+    prompt:"She has always had a knack _____ languages, picking up French and Mandarin with surprising ease.",
+    options:["at","for","with","in"], correctIndex:1,
+    explanation:"The idiom is \"a knack for\" something, meaning a natural talent for it." },
+
+  { id:"wx17", type:"blank", category:"blank", sub:"Idiomatic Usage", difficulty:6,
+    prompt:"He was loath _____ admit that he had made a mistake in the budget forecast.",
+    options:["of","for","to","in"], correctIndex:2,
+    explanation:"The idiom \"loath to\" (reluctant to) always pairs with \"to\" plus a verb, not \"of,\" \"for,\" or \"in.\"" },
+
+  { id:"wx18", type:"blank", category:"blank", sub:"Idiomatic Usage", difficulty:7,
+    prompt:"His argument sounded persuasive at first, but it did not hold water _____ closer scrutiny.",
+    options:["in","with","under","on"], correctIndex:2,
+    explanation:"The idiomatic phrase is \"under scrutiny,\" meaning subjected to close examination; \"hold water\" then means the argument fails once examined this way." },
+
+  { id:"wx19", type:"blank", category:"blank", sub:"Idiomatic Usage", difficulty:9,
+    prompt:"Given how clearly the pre-election polling had predicted the result, the final outcome felt like something of a _____.",
+    options:["moot point","self-fulfilling prophecy","foregone conclusion","fait accompli"], correctIndex:2,
+    explanation:"A \"foregone conclusion\" is an outcome that was predictable and certain in advance, matching the clear polling data. A \"fait accompli\" refers to something already done and unchangeable, a \"self-fulfilling prophecy\" is a prediction that causes its own fulfillment, and a \"moot point\" is an issue no longer worth debating." },
+
+  { id:"wx20", type:"blank", category:"blank", sub:"Idiomatic Usage", difficulty:10,
+    prompt:"The senator, who had built his career prosecuting corrupt officials, was _____ when investigators uncovered his own decades of bribery.",
+    options:["thrown under the bus","hoist by his own petard","left holding the bag","caught red-handed"], correctIndex:1,
+    explanation:"To be \"hoist by one's own petard\" means to be undone by one's own scheme or trap, fitting the poetic justice of a corruption prosecutor caught taking bribes. \"Thrown under the bus\" implies betrayal by others, \"left holding the bag\" implies unfairly taking blame for others' actions, and \"caught red-handed\" simply means caught in the act, without the irony of a self-inflicted downfall." },
+
+  { id:"wx21", type:"blank", category:"blank", sub:"Register", difficulty:1,
+    prompt:"In the formal business email, she wrote: \"I am writing to _____ that the shipment has been delayed.\"",
+    options:["holler at you","inform you","give you a heads-up","let you know"], correctIndex:1,
+    explanation:"\"Inform you\" matches the formal register of a business email. \"Let you know,\" \"give you a heads-up,\" and \"holler at you\" grow progressively more casual and are out of place in formal correspondence." },
+
+  { id:"wx22", type:"blank", category:"blank", sub:"Register", difficulty:3,
+    prompt:"The academic paper's introduction should _____ the central argument clearly before moving into supporting details.",
+    options:["get into","lay out","state","spell out"], correctIndex:2,
+    explanation:"\"State\" is the plain, formal verb expected in academic writing. \"Spell out,\" \"lay out,\" and \"get into\" are all fine in conversation but read as too informal for a scholarly introduction." },
+
+  { id:"wx23", type:"blank", category:"blank", sub:"Register", difficulty:5,
+    prompt:"The memo asked employees to _____ any concerns with their direct supervisor before escalating the issue further.",
+    options:["gripe about","sound off about","raise","bring up"], correctIndex:2,
+    explanation:"\"Raise\" is the standard, professionally neutral verb for a workplace memo. \"Bring up\" is a bit too casual for formal instructions, while \"gripe about\" and \"sound off about\" carry an informal, complaining connotation unsuited to a memo." },
+
+  { id:"wx24", type:"blank", category:"blank", sub:"Register", difficulty:7,
+    prompt:"Texting his roommate about running late, he wrote: \"Sorry, stuck in traffic, I'll be there _____.\"",
+    options:["anon","forthwith","presently","shortly"], correctIndex:3,
+    explanation:"\"Shortly\" fits the casual register of a text message. \"Presently,\" \"forthwith,\" and especially the archaic \"anon\" are stiffly formal or old-fashioned choices that would sound oddly stilted in an informal text." },
+
+  { id:"wx25", type:"blank", category:"blank", sub:"Register", difficulty:8,
+    prompt:"In the joint communique, the two nations agreed to _____ their ongoing border dispute through continued dialogue.",
+    options:["hash out","duke it out","address","iron out"], correctIndex:2,
+    explanation:"\"Address\" matches the formal, diplomatic register of a joint communique. \"Hash out,\" \"iron out,\" and especially \"duke it out\" are idiomatic and conversational, appropriate for casual speech but not formal international statements." },
+
   /* ---- Vocabulary (50) ---- */
   { id:"vc1", type:"vocab", category:"vocab", sub:"Word Meaning in Context", difficulty:5,
     prompt:"The gallery director noted that the ice sculptures were intentionally ephemeral, designed to melt away within hours of the exhibition opening. As used here, \"ephemeral\" most nearly means:",
@@ -784,6 +1034,131 @@ const PLACEMENT_POOL = [
     prompt:"The engineers had been relentlessly optimistic about the launch date, but the final inspection left even the most upbeat team members feeling _____ about hitting the deadline. Which word best completes the sentence?",
     options:["hopeful","confident","pessimistic","assured"], correctIndex:2,
     explanation:"\"But\" signals a reversal from the team's earlier optimism, calling for \"pessimistic,\" meaning expecting the worst — matching their doubt about \"hitting the deadline\" after the flaw was discovered. \"Confident\" is a trap because it continues the original optimistic tone rather than contradicting it." },
+
+  { id:"vx1", type:"vocab", category:"vocab", sub:"Word Meaning in Context", difficulty:1,
+    prompt:"After the storm destroyed dozens of homes, the town's wealthiest resident made a generous donation to help rebuild the shelter. As used here, \"generous\" most nearly means:",
+    options:["giving freely and abundantly","done out of guilt","legally required","kept secret from others"], correctIndex:0,
+    explanation:"Generous describes willingly giving more than is expected, as with the large donation described." },
+
+  { id:"vx2", type:"vocab", category:"vocab", sub:"Word Meaning in Context", difficulty:1,
+    prompt:"When she discovered that someone had scratched her brand-new car in the parking lot, Maria was furious. As used here, \"furious\" most nearly means:",
+    options:["mildly annoyed","extremely angry","deeply confused","quietly disappointed"], correctIndex:1,
+    explanation:"Furious means intensely angry, a much stronger reaction than mere annoyance." },
+
+  { id:"vx3", type:"vocab", category:"vocab", sub:"Word Meaning in Context", difficulty:2,
+    prompt:"The blue whale is an enormous creature, capable of growing longer than three school buses parked end to end. As used here, \"enormous\" most nearly means:",
+    options:["extremely rare","extremely graceful","extremely large","extremely fast"], correctIndex:2,
+    explanation:"Enormous means very great in size, matching the comparison to three school buses." },
+
+  { id:"vx4", type:"vocab", category:"vocab", sub:"Word Meaning in Context", difficulty:3,
+    prompt:"Even after her classmates had given up on the project, Priya remained diligent, rechecking every calculation until the report was finished. As used here, \"diligent\" most nearly means:",
+    options:["careless and rushed","overly confident","easily distracted","showing steady, careful effort"], correctIndex:3,
+    explanation:"Diligent describes persistent, careful effort, shown by her continuing to recheck the work." },
+
+  { id:"vx5", type:"vocab", category:"vocab", sub:"Word Meaning in Context", difficulty:4,
+    prompt:"The contract's wording was so ambiguous that both companies interpreted the delivery deadline differently. As used here, \"ambiguous\" most nearly means:",
+    options:["open to more than one interpretation","written in a foreign language","deliberately dishonest","extremely detailed"], correctIndex:0,
+    explanation:"Ambiguous means having more than one possible meaning, which is why the two companies disagreed." },
+
+  { id:"vx6", type:"vocab", category:"vocab", sub:"Word Meaning in Context", difficulty:5,
+    prompt:"Rather than debate ideals for another hour, the new manager took a pragmatic approach and simply assigned tasks based on who was available. As used here, \"pragmatic\" most nearly means:",
+    options:["based on strict rules","focused on practical results rather than theory","emotionally driven","intentionally slow"], correctIndex:1,
+    explanation:"Pragmatic describes a practical, results-oriented approach, as opposed to abstract debate." },
+
+  { id:"vx7", type:"vocab", category:"vocab", sub:"Word Meaning in Context", difficulty:7,
+    prompt:"The billionaire's ostentatious mansion featured gold-plated doorknobs and a fountain shaped like his own initials. As used here, \"ostentatious\" most nearly means:",
+    options:["carefully hidden from view","modest and understated","designed to impress through showy display","structurally unsound"], correctIndex:2,
+    explanation:"Ostentatious describes a showy display meant to attract attention or admiration, as with the gold doorknobs and initial-shaped fountain." },
+
+  { id:"vx8", type:"vocab", category:"vocab", sub:"Roots & Prefixes/Suffixes", difficulty:1,
+    prompt:"For her school assignment, Elena wrote a biography of her grandmother, describing her childhood in Portugal and her journey to becoming a nurse. As used here, \"biography\" most nearly means:",
+    options:["a collection of family recipes","a letter of complaint","a set of photographs","a written account of a person's life"], correctIndex:3,
+    explanation:"Biography combines the Greek root \"bio-\" (life) with \"-graphy\" (writing), literally meaning \"life writing\" — an account of someone's life." },
+
+  { id:"vx9", type:"vocab", category:"vocab", sub:"Roots & Prefixes/Suffixes", difficulty:3,
+    prompt:"The witness gave such a credible account of the accident that the jury had no trouble believing her version of events. As used here, \"credible\" most nearly means:",
+    options:["believable and trustworthy","extremely emotional","legally required","difficult to understand"], correctIndex:0,
+    explanation:"Credible comes from the Latin root \"cred-\" (to believe) plus the suffix \"-ible\" (able to be), meaning \"able to be believed.\"" },
+
+  { id:"vx10", type:"vocab", category:"vocab", sub:"Roots & Prefixes/Suffixes", difficulty:4,
+    prompt:"Rather than follow the lengthy approval process, the manager found a way to circumvent the rule entirely. As used here, \"circumvent\" most nearly means:",
+    options:["to strictly enforce","to get around by clever means","to publicly announce","to formally request an exception"], correctIndex:1,
+    explanation:"Circumvent combines the prefix \"circum-\" (around) with the root \"vent-\" (to come), literally meaning \"to come around\" an obstacle rather than face it directly." },
+
+  { id:"vx11", type:"vocab", category:"vocab", sub:"Roots & Prefixes/Suffixes", difficulty:6,
+    prompt:"Gold is prized by jewelers because it is so malleable that it can be hammered into extremely thin sheets without cracking. As used here, \"malleable\" most nearly means:",
+    options:["resistant to heat","chemically unstable","able to be shaped or bent easily","difficult to clean"], correctIndex:2,
+    explanation:"Malleable comes from the Latin \"malleus\" (hammer), describing a material that can be shaped by hammering or pressure without breaking." },
+
+  { id:"vx12", type:"vocab", category:"vocab", sub:"Roots & Prefixes/Suffixes", difficulty:7,
+    prompt:"The foundation's beneficent work funded hospitals, schools, and clean-water projects across the region for decades. As used here, \"beneficent\" most nearly means:",
+    options:["legally binding","financially reckless","publicly controversial","actively doing good for others"], correctIndex:3,
+    explanation:"Beneficent joins the prefix \"bene-\" (good) with the root \"-fic-\" (to do or make), meaning \"doing good\" — the opposite construction of \"maleficent,\" which uses \"mal-\" (bad)." },
+
+  { id:"vx13", type:"vocab", category:"vocab", sub:"Roots & Prefixes/Suffixes", difficulty:9,
+    prompt:"As a peripatetic diplomat, she spent barely two weeks in any single country before packing her bags for the next assignment. As used here, \"peripatetic\" most nearly means:",
+    options:["constantly moving from place to place","secretive and withdrawn","highly indecisive","formally trained"], correctIndex:0,
+    explanation:"Peripatetic derives from the Greek prefix \"peri-\" (around) and the root \"pat-\" (to walk), originally describing Aristotle's habit of walking while teaching; it now describes someone who travels constantly rather than settling." },
+
+  { id:"vx14", type:"vocab", category:"vocab", sub:"Synonyms & Nuance", difficulty:2,
+    prompt:"The abandoned house at the end of the street had a gloomy atmosphere that made even the bravest kids hesitate at the gate. Which word is closest in meaning to \"gloomy\" as used here?",
+    options:["Unhappy","Dim and dismal","Silent","Ancient"], correctIndex:1,
+    explanation:"Gloomy describing a place's atmosphere refers to a dark, dismal quality, not a person's emotional state, which \"unhappy\" would suggest." },
+
+  { id:"vx15", type:"vocab", category:"vocab", sub:"Synonyms & Nuance", difficulty:3,
+    prompt:"Even after earning a large salary, she stayed frugal, packing her own lunch and repairing old furniture instead of buying new. Which word is closest in meaning to \"frugal\" as used here?",
+    options:["Stingy","Poor","Careful and economical with money","Generous"], correctIndex:2,
+    explanation:"Frugal describes sensible, deliberate thrift, a positive trait distinct from \"stingy,\" which implies an unwillingness to spend even when appropriate." },
+
+  { id:"vx16", type:"vocab", category:"vocab", sub:"Synonyms & Nuance", difficulty:5,
+    prompt:"Despite ending their business partnership, the two founders kept things amicable, still meeting for coffee every month. Which word is closest in meaning to \"amicable\" as used here?",
+    options:["Passionate","Formal","Cautious","Friendly and free of ill will"], correctIndex:3,
+    explanation:"Amicable describes a relationship marked by goodwill and an absence of hostility, fitting the continued friendly meetings." },
+
+  { id:"vx17", type:"vocab", category:"vocab", sub:"Synonyms & Nuance", difficulty:6,
+    prompt:"The coastal town proved remarkably resilient, rebuilding its docks and restarting its fishing fleet within months of the hurricane. Which word is closest in meaning to \"resilient\" as used here?",
+    options:["Quick to recover from hardship","Wealthy","Physically strong","Cautious about risk"], correctIndex:0,
+    explanation:"Resilient specifically describes the ability to recover quickly from difficulty, not general strength or wealth." },
+
+  { id:"vx18", type:"vocab", category:"vocab", sub:"Synonyms & Nuance", difficulty:8,
+    prompt:"As the plane began its descent through the storm, she felt a rising trepidation she couldn't quite explain to the passenger beside her. Which word is closest in meaning to \"trepidation\" as used here?",
+    options:["Mild curiosity","A vague, apprehensive dread","Sudden excitement","Physical exhaustion"], correctIndex:1,
+    explanation:"Trepidation names a nervous, anxious dread about what may happen, stronger than curiosity and distinct from general fear that has an obvious cause." },
+
+  { id:"vx19", type:"vocab", category:"vocab", sub:"Synonyms & Nuance", difficulty:10,
+    prompt:"The negotiator's final offer seemed designed less to resolve the dispute than to propitiate the angrier of the two board members long enough to get his signature. Which word is closest in meaning to \"propitiate\" as used here?",
+    options:["To persuade with evidence","To ignore completely","To soothe or win over someone's hostility","To formally overrule"], correctIndex:2,
+    explanation:"Propitiate means to appease or win over someone who is displeased, specifically by conciliatory action — a more deliberate, almost strategic softening of hostility than the broader \"placate\" or \"mollify.\"" },
+
+  { id:"vx20", type:"vocab", category:"vocab", sub:"Antonyms & Contrast", difficulty:5,
+    prompt:"Although the review board expected polished, diplomatic answers, the young engineer gave surprisingly candid responses about the project's failures. What is the opposite of \"candid\" as used here?",
+    options:["honest and forthright","direct and blunt","openly sincere","evasive and guarded"], correctIndex:3,
+    explanation:"Candid means openly honest and direct; the three wrong options all describe that same honest quality, while the true opposite is evasive or guarded — someone who avoids giving a straight answer." },
+
+  { id:"vx21", type:"vocab", category:"vocab", sub:"Antonyms & Contrast", difficulty:7,
+    prompt:"Unlike his meticulous co-author, who checked every footnote twice, the historian was notorious for leaving dates and citations unverified. What is the opposite of \"meticulous\" as used here?",
+    options:["careless and slapdash","extremely thorough","precise and detail-oriented","painstakingly careful"], correctIndex:0,
+    explanation:"Meticulous means extremely careful with details; the three wrong options all describe that same careful quality, while the true opposite is careless or slapdash work." },
+
+  { id:"vx22", type:"vocab", category:"vocab", sub:"Antonyms & Contrast", difficulty:8,
+    prompt:"Although the quarterly numbers were disappointing, the CEO remained sanguine about the company's future in her address to shareholders. What is the opposite of \"sanguine\" as used here?",
+    options:["confidently optimistic","despondent and pessimistic","cheerfully hopeful","buoyantly positive"], correctIndex:1,
+    explanation:"Sanguine means confidently optimistic; the three wrong options all describe that same hopeful quality, while the true opposite is despondent or pessimistic." },
+
+  { id:"vx23", type:"vocab", category:"vocab", sub:"Antonyms & Contrast", difficulty:9,
+    prompt:"Unlike the previous witness, who rambled through a twenty-minute answer to a simple question, the detective was famously laconic on the stand. What is the opposite of \"laconic\" as used here?",
+    options:["brief and terse","sparing with words","verbose and long-winded","economical in speech"], correctIndex:2,
+    explanation:"Laconic means using very few words; the three wrong options all describe that same terse quality, while the true opposite is verbose or long-winded, matching the contrast with the rambling witness." },
+
+  { id:"vx24", type:"vocab", category:"vocab", sub:"Antonyms & Contrast", difficulty:9,
+    prompt:"Although he had aced every practice interview, the candidate grew strangely diffident the moment he walked into the actual meeting room. What is the opposite of \"diffident\" as used here?",
+    options:["shy and hesitant","timid and unsure","modestly reserved","self-assured and confident"], correctIndex:3,
+    explanation:"Diffident means lacking confidence, often to the point of shyness; the three wrong options all describe that same hesitant quality, while the true opposite is self-assured or confident." },
+
+  { id:"vx25", type:"vocab", category:"vocab", sub:"Antonyms & Contrast", difficulty:10,
+    prompt:"Although every advisor in the room urged him to reconsider, the general remained obdurate, refusing to alter the battle plan by a single detail. What is the opposite of \"obdurate\" as used here?",
+    options:["compliant and open to persuasion","stubbornly inflexible","unyielding and firm","resolutely fixed in position"], correctIndex:0,
+    explanation:"Obdurate describes a stubborn refusal to change despite pressure; the three wrong options all describe that same unyielding quality, while the true opposite is compliant or open to persuasion." },
 
   /* ---- Reading comprehension (50, across 10 shared passages) ---- */
   { id:"rc1", type:"reading", category:"reading", sub:"Main Idea", difficulty:5, passageId:"RP1",
@@ -1296,6 +1671,131 @@ const PLACEMENT_POOL = [
     prompt:"Choose the correctly spelled word that fits: \"The meeting has been rescheduled for ______ morning.\"",
     options:["tommorow","tomorrow","tommorrow","tomorow"], correctIndex:1,
     explanation:"\"Tomorrow\" doubles the r but has only a single m, an irregular pattern from \"to + morrow.\" The common mistake doubles the m instead, writing \"tommorow.\"" },
+
+  { id:"sx1", type:"spelling", category:"spelling", sub:"Commonly Misspelled Words", difficulty:1,
+    prompt:"She wrote a letter to her best ______ who had moved away.",
+    options:["friend","freind","frend","friendd"], correctIndex:0,
+    explanation:"'Friend' follows the exception to 'i before e' — it's spelled with 'ie,' not 'ei' as in the common mix-up 'freind.'" },
+
+  { id:"sx2", type:"spelling", category:"spelling", sub:"Commonly Misspelled Words", difficulty:3,
+    prompt:"He refused to eat any ______ that wasn't covered in cheese.",
+    options:["vegtable","vegetable","vegitable","vegatable"], correctIndex:1,
+    explanation:"'Vegetable' keeps the often-dropped middle 'e' after 'veg-'; many writers skip it and write 'vegtable.'" },
+
+  { id:"sx3", type:"spelling", category:"spelling", sub:"Commonly Misspelled Words", difficulty:5,
+    prompt:"It was ______ to bring a passport before boarding the international flight.",
+    options:["necesary","nessecary","necessary","neccessary"], correctIndex:2,
+    explanation:"'Necessary' has one 'c' and two 's's — remember 'one collar, two socks.' The frequent error doubles the 'c' instead, as in 'neccessary.'" },
+
+  { id:"sx4", type:"spelling", category:"spelling", sub:"Commonly Misspelled Words", difficulty:7,
+    prompt:"The crowd was in a state of pure ______ when the team scored the winning goal.",
+    options:["ecstacy","extasy","ecstasey","ecstasy"], correctIndex:3,
+    explanation:"'Ecstasy' ends in '-asy,' not '-acy' — the misspelling 'ecstacy' is extremely common because it mirrors how the word sounds." },
+
+  { id:"sx5", type:"spelling", category:"spelling", sub:"Commonly Misspelled Words", difficulty:9,
+    prompt:"Paramedics worked quickly to ______ the patient who had stopped breathing.",
+    options:["resuscitate","resucitate","ressuscitate","resussitate"], correctIndex:0,
+    explanation:"'Resuscitate' has a tricky single-s / double-s / double-c pattern (re-SUS-ci-tate) that trips up even careful spellers; most people misplace the doubled letter entirely." },
+
+  { id:"sx6", type:"spelling", category:"spelling", sub:"Homophones", difficulty:1,
+    prompt:"Please put the boxes over ______, next to the door.",
+    options:["their","there","thear","ther"], correctIndex:1,
+    explanation:"'There' indicates location and ends in '-here,' like 'here' and 'where.' The homophone 'their' (possessive) is the most common mix-up." },
+
+  { id:"sx7", type:"spelling", category:"spelling", sub:"Homophones", difficulty:3,
+    prompt:"The car remained completely ______ even after the driver released the brake, because the engine had stalled.",
+    options:["stationery","stationarry","stationary","staionary"], correctIndex:2,
+    explanation:"'Stationary' (not moving) ends in '-ary,' like 'stand still.' Its homophone 'stationery' (writing paper) ends in '-ery' — a very common mix-up." },
+
+  { id:"sx8", type:"spelling", category:"spelling", sub:"Homophones", difficulty:5,
+    prompt:"The scarf was the perfect ______ to her outfit, matching the colors exactly.",
+    options:["complament","compliment","complemant","complement"], correctIndex:3,
+    explanation:"'Complement' (something that completes) has an 'e' in the middle, unlike its homophone 'compliment' (praise), which has an 'i' — a classic mix-up." },
+
+  { id:"sx9", type:"spelling", category:"spelling", sub:"Homophones", difficulty:7,
+    prompt:"She made a ______ exit from the party so no one would notice she had left.",
+    options:["discreet","discrete","discreat","descreet"], correctIndex:0,
+    explanation:"'Discreet' (tactful, careful) has a doubled 'ee,' while its homophone 'discrete' (separate, distinct) ends in '-ete' — the two are frequently swapped." },
+
+  { id:"sx10", type:"spelling", category:"spelling", sub:"Homophones", difficulty:9,
+    prompt:"The ______ shopkeeper happily rearranged his entire window display just to please the fussy customer.",
+    options:["complaisent","complaisant","complacent","complaisiant"], correctIndex:1,
+    explanation:"'Complaisant' (eager to please) is often confused with the unrelated, near-identical-sounding word 'complacent' (smugly self-satisfied) — even strong spellers mix up these two advanced near-homophones." },
+
+  { id:"sx11", type:"spelling", category:"spelling", sub:"Silent Letters", difficulty:1,
+    prompt:"The ______ rode into battle wearing a suit of armor.",
+    options:["night","knite","knight","nite"], correctIndex:2,
+    explanation:"'Knight' keeps the silent 'k' from its Old English root — dropping it produces 'night,' a completely different (but real) word." },
+
+  { id:"sx12", type:"spelling", category:"spelling", sub:"Silent Letters", difficulty:3,
+    prompt:"The meeting was rescheduled to ______ afternoon instead of Monday.",
+    options:["Wensday","Wendesday","Wendsday","Wednesday"], correctIndex:3,
+    explanation:"'Wednesday' keeps a silent 'd' from 'Woden's day' that isn't pronounced — most misspellings drop it entirely, writing 'Wensday.'" },
+
+  { id:"sx13", type:"spelling", category:"spelling", sub:"Silent Letters", difficulty:5,
+    prompt:"She had never traveled to a ______ country before her trip to Japan.",
+    options:["foreign","foriegn","forein","foregin"], correctIndex:0,
+    explanation:"'Foreign' is a notorious exception to 'i before e' — it's spelled 'e-i,' not 'i-e' as many writers guess with 'foriegn.'" },
+
+  { id:"sx14", type:"spelling", category:"spelling", sub:"Silent Letters", difficulty:7,
+    prompt:"The doctor said the cough was caused by a buildup of ______ in his throat.",
+    options:["flegm","phlegm","phlem","phlegme"], correctIndex:1,
+    explanation:"'Phlegm' ends in a silent 'g' before the 'm' (from Greek 'phlegma') — the natural phonetic spelling 'flem' or 'phlem' leaves it out entirely." },
+
+  { id:"sx15", type:"spelling", category:"spelling", sub:"Silent Letters", difficulty:9,
+    prompt:"The ancient myth described gods of the underworld as ______ deities, dwelling deep beneath the earth.",
+    options:["thonic","cthonic","chthonic","chtonic"], correctIndex:2,
+    explanation:"'Chthonic' hides a nearly silent 'ch' before the 'th' — its Greek root ('chthon,' meaning earth) gives it a letter cluster almost no one would guess from the pronunciation alone." },
+
+  { id:"sx16", type:"spelling", category:"spelling", sub:"Prefixes & Suffixes", difficulty:2,
+    prompt:"The teacher scolded the students for their ______ behavior during the assembly.",
+    options:["imature","immiture","immatur","immature"], correctIndex:3,
+    explanation:"The prefix 'im-' doubles the 'm' when attached to 'mature' — dropping one 'm,' as in 'imature,' is the common error." },
+
+  { id:"sx17", type:"spelling", category:"spelling", sub:"Prefixes & Suffixes", difficulty:4,
+    prompt:"The lawyer objected, calling the witness's comment completely ______ to the case.",
+    options:["irrelevant","irrelavant","irelevant","irrelevent"], correctIndex:0,
+    explanation:"The prefix 'ir-' doubles the 'r' before 'relevant,' and the ending is '-ant,' not '-ent' — 'irrelevent' and 'irelevant' each miss one of these features." },
+
+  { id:"sx18", type:"spelling", category:"spelling", sub:"Prefixes & Suffixes", difficulty:6,
+    prompt:"The new ramp made the building fully ______ to wheelchair users.",
+    options:["accesible","accessible","assessible","accessable"], correctIndex:1,
+    explanation:"'Accessible' takes the '-ible' suffix, not '-able,' and doubles the 'c' — 'accessable' gets the ending wrong, a very frequent slip." },
+
+  { id:"sx19", type:"spelling", category:"spelling", sub:"Prefixes & Suffixes", difficulty:8,
+    prompt:"The clinic offered to ______ every child against the seasonal illness.",
+    options:["innoculate","inocculate","inoculate","enoculate"], correctIndex:2,
+    explanation:"'Inoculate' takes only a single 'n,' unlike similar-sounding words such as 'innocent' — most people wrongly double it as 'innoculate.'" },
+
+  { id:"sx20", type:"spelling", category:"spelling", sub:"Prefixes & Suffixes", difficulty:10,
+    prompt:"The ______ old man snapped at anyone who dared to disturb his afternoon nap.",
+    options:["irrascible","irascable","irrascable","irascible"], correctIndex:3,
+    explanation:"'Irascible' (easily angered) takes only a single 'r,' unlike lookalike words such as 'irritable' or 'irresistible' — the doubled-r spelling 'irrascible' is the near-universal guess." },
+
+  { id:"sx21", type:"spelling", category:"spelling", sub:"Double Letters & Irregular Spellings", difficulty:2,
+    prompt:"The puppy was so ______ it could fit in the palm of her hand.",
+    options:["little","litle","littel","litte"], correctIndex:0,
+    explanation:"'Little' has a double 't' in the middle — 'litle' drops one of the pair." },
+
+  { id:"sx22", type:"spelling", category:"spelling", sub:"Double Letters & Irregular Spellings", difficulty:4,
+    prompt:"The magician made the rabbit ______ in a puff of smoke.",
+    options:["dissappear","disappear","disapear","dissapear"], correctIndex:1,
+    explanation:"'Disappear' has a single 's' (from 'dis-' plus 'appear') but a double 'p' — most misspellings wrongly double the 's' instead, as in 'dissapear.'" },
+
+  { id:"sx23", type:"spelling", category:"spelling", sub:"Double Letters & Irregular Spellings", difficulty:6,
+    prompt:"My colleague asked me to ______ a good restaurant for their anniversary dinner.",
+    options:["reccommend","recomend","recommend","recommand"], correctIndex:2,
+    explanation:"'Recommend' has a single 'c' but a double 'm' — the opposite of what many writers guess, producing errors like 'reccommend' or 'recomend.'" },
+
+  { id:"sx24", type:"spelling", category:"spelling", sub:"Double Letters & Irregular Spellings", difficulty:8,
+    prompt:"Getting the permit approved required navigating an enormous amount of government ______.",
+    options:["beaurocracy","burocracy","bureaucrasy","bureaucracy"], correctIndex:3,
+    explanation:"'Bureaucracy' keeps the irregular French-derived 'eau' cluster from 'bureau' — the common error 'beaurocracy' scrambles the vowel order." },
+
+  { id:"sx25", type:"spelling", category:"spelling", sub:"Double Letters & Irregular Spellings", difficulty:10,
+    prompt:"After fifteen years of service, she was promoted to the rank of ______ in the army.",
+    options:["colonel","kernel","colonnel","kernal"], correctIndex:0,
+    explanation:"'Colonel' is pronounced identically to the real word 'kernel' but keeps its Italian-derived spelling with an 'o' and a single 'n' — the pronunciation gives almost no clue to the correct letters." },
 ];
 
 /* =================== GRAMMAR & PUNCTUATION LESSON BANK =================== */
