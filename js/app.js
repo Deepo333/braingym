@@ -73,7 +73,7 @@
   let dismissedStandaloneNotice = load("dismissedStandaloneNotice", false);
 
   if(placementProgress && (
-    !placementProgress.sequence || !placementProgress.categoryDifficulty || !placementProgress.categoryDisplayDifficulty ||
+    !placementProgress.sequence || !placementProgress.categoryDifficulty || !placementProgress.categoryDisplayDifficulty || !placementProgress.displaySnapshot ||
     placementProgress.order.some(function(id){ return id && !PLACEMENT_BY_ID[id]; })
   )){
     placementProgress = null;
@@ -102,12 +102,17 @@
   //   - categoryDifficulty: the REAL target used to pick the next question's
   //     content. Moves by PLACEMENT_ACTUAL_STEP per answer, so the actual
   //     challenge ramps up/down faster than the visible indicator suggests.
-  //   - categoryDisplayDifficulty: what the on-screen "Difficulty N/10" pill
-  //     shows. Always moves by exactly 1 per answer — a simple, readable
-  //     progress cue, not a precise reflection of the real target.
-  // Both are clamped to 1-10. This is measurement-only — no correct/
-  // incorrect feedback is ever shown during the test, so both adjustments
-  // happen silently in the background.
+  //   - categoryDisplayDifficulty: a running per-category counter that moves
+  //     by exactly 1 per answer — a simple, readable progress cue, not a
+  //     precise reflection of the real target.
+  // Both are clamped to 1-10. The on-screen "Difficulty N/10" pill does NOT
+  // read categoryDisplayDifficulty live — it reads a frozen snapshot of that
+  // value captured in displaySnapshot[slotIndex] at the moment each question
+  // is first picked, so revisiting an earlier question via Back always shows
+  // the same value it showed originally, no matter how much the running
+  // counter has moved since. This is measurement-only — no correct/incorrect
+  // feedback is ever shown during the test, so all adjustments happen
+  // silently in the background.
   const PLACEMENT_DRAW_COUNTS = { error:12, blank:10, vocab:8, spelling:10 }; // 40 total
   const PLACEMENT_START_DIFFICULTY = 5;
   const PLACEMENT_ACTUAL_STEP = 2;
@@ -149,11 +154,14 @@
       categoryDisplayDifficulty[cat] = PLACEMENT_START_DIFFICULTY;
     });
     const order = new Array(sequence.length).fill(null);
+    const displaySnapshot = new Array(sequence.length).fill(null);
     const first = pickAdaptiveQuestion(sequence[0], categoryDifficulty[sequence[0]], {});
     order[0] = first.id;
+    displaySnapshot[0] = categoryDisplayDifficulty[sequence[0]];
     placementProgress = {
       sequence: sequence,
       order: order,
+      displaySnapshot: displaySnapshot,
       categoryDifficulty: categoryDifficulty,
       categoryDisplayDifficulty: categoryDisplayDifficulty,
       answers: new Array(sequence.length).fill(null),
@@ -194,6 +202,7 @@
         const nextCat = placementProgress.sequence[nextIdx];
         const picked = pickAdaptiveQuestion(nextCat, placementProgress.categoryDifficulty[nextCat], usedIds);
         placementProgress.order[nextIdx] = picked.id;
+        placementProgress.displaySnapshot[nextIdx] = placementProgress.categoryDisplayDifficulty[nextCat];
       }
       placementProgress.currentIndex = nextIdx;
       save("placementProgress", placementProgress);
@@ -583,7 +592,7 @@
         '<div class="card stack">' +
           '<div class="row-between" style="flex-wrap:wrap; row-gap:8px;">' +
             '<span class="pill pill-amethyst" style="white-space:nowrap;">' + esc(CATEGORY_NAMES[q.category]) + "</span>" +
-            '<span class="pill pill-beige" style="white-space:nowrap;">Difficulty ' + placementProgress.categoryDisplayDifficulty[q.category] + '/10</span>' +
+            '<span class="pill pill-beige" style="white-space:nowrap;">Difficulty ' + placementProgress.displaySnapshot[idx] + '/10</span>' +
           "</div>" +
           passageHTML(q) +
           '<div class="prompt-box">' + renderPrompt(q.prompt) + "</div>" +
