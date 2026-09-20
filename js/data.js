@@ -408,7 +408,7 @@ const PLACEMENT_POOL = [
     options:["NO CHANGE","The reservoir's water level had dropped to a record low, officials delayed imposing rationing for several more weeks, hoping seasonal rains would arrive in time.","The reservoir's water level had dropped to a record low; therefore, officials delayed imposing rationing for several more weeks, hoping seasonal rains would arrive in time.","Dropping to a record low, officials delayed imposing rationing for several more weeks at the reservoir, hoping seasonal rains would arrive in time."], correctIndex:0,
     explanation:"The original already uses effective subordination (\"Although\") to combine the contrasting ideas — a record-low water level yet delayed rationing — into one clear sentence, so it needs no change. The semicolon option is tempting since it's grammatically valid punctuation, but \"therefore\" wrongly frames the delay as a logical consequence of the low water level rather than the contrast it actually is; the last option opens with a dangling modifier, since \"Dropping to a record low\" should describe \"the reservoir's water level,\" not \"officials.\"" },
 
-  /* ---- Word choice (50) ---- */
+  /* ---- Word choice (75) ---- */
   { id:"wb1", type:"blank", category:"blank", sub:"Commonly Confused Words", difficulty:4,
     prompt:"Rather than quietly seeking a legal opinion, the startup chose to openly _____ the licensing requirement, daring regulators to intervene.",
     options:["flaunt","endorse","flout","uphold"], correctIndex:2,
@@ -511,53 +511,53 @@ const PLACEMENT_POOL = [
 
   { id:"wb21", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:1,
     prompt:"The committee voted to _____ the redundant approval step that had slowed every purchase order by nearly a week.",
-    options:["eliminate","completely do away with","get rid of entirely","remove once and for all"], correctIndex:0,
-    explanation:"\"Eliminate\" already means to remove entirely, stating the action in one precise word. The other options pair a removal verb with a redundant intensifier — \"entirely,\" \"completely,\" \"once and for all\" — that adds no meaning \"eliminate\" doesn't already carry." },
+    options:["eliminate","reduce","postpone","suspend"], correctIndex:0,
+    explanation:"\"Eliminate\" means to remove something completely, matching the committee's vote to do away with the step entirely. \"Reduce\" implies only a partial decrease rather than full removal, \"postpone\" delays the step rather than removing it, and \"suspend\" pauses it temporarily rather than ending it for good." },
 
   { id:"wb22", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:4,
     prompt:"Investigators could not _____ why the alarm had failed to trigger during the drill.",
-    options:["come to a clear understanding of","figure out for certain","ascertain","arrive at a definite conclusion about"], correctIndex:2,
-    explanation:"\"Ascertain\" means to find out with certainty in a single word. The alternatives are circumlocutions that spread the same idea across several words, the kind of padded phrasing careful writing trims." },
+    options:["surmise","verify","ascertain","speculate"], correctIndex:2,
+    explanation:"\"Ascertain\" means to discover something through investigation until it is known for certain, matching investigators who \"could not\" find the cause despite trying. \"Surmise\" and \"speculate\" both mean to guess without solid evidence, the opposite of the certainty \"ascertain\" implies, while \"verify\" means to confirm something already known or believed, not to discover an unknown cause from scratch." },
 
   { id:"wb23", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:1,
     prompt:"The revised contract will _____ the vague language that had led to years of disputes between the two firms.",
-    options:["make more clear and understandable","clarify","render less ambiguous and confusing","help to explain more fully"], correctIndex:1,
-    explanation:"\"Clarify\" conveys the intended meaning in one word. The other choices restate the same idea with redundant pairs of near-synonyms, such as \"clear and understandable\" or \"ambiguous and confusing,\" the kind of padding concise writing avoids." },
+    options:["amend","clarify","simplify","qualify"], correctIndex:1,
+    explanation:"\"Clarify\" means to make something's meaning clearer without changing its substance, exactly what's needed to fix vague contract language. \"Amend\" means to formally change or revise the terms themselves, \"simplify\" means to make something less complex, which could strip out needed nuance rather than clarify it, and \"qualify\" means to add limiting conditions, not to remove ambiguity." },
 
   { id:"wb24", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:1,
     prompt:"Rather than list every possible outcome, the report simply tried to _____ the three most likely scenarios.",
-    options:["give a brief overview and summary of","provide a condensed account describing","sum up in a few short words","summarize"], correctIndex:3,
-    explanation:"\"Summarize\" is the single precise verb for the action described. \"Give a brief overview and summary of\" is redundant — \"overview\" and \"summary\" duplicate each other — exactly the kind of doubled phrasing concise writing cuts." },
+    options:["outline","paraphrase","highlight","summarize"], correctIndex:3,
+    explanation:"\"Summarize\" means to give a concise statement covering all the main points, exactly the task the report set for itself. \"Outline\" gives only a skeletal list of topics rather than a condensed narrative, \"paraphrase\" restates ideas in different words without necessarily condensing them, and \"highlight\" calls attention to select standout points rather than covering all three scenarios comprehensively." },
 
   { id:"wb25", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:2,
     prompt:"The editor asked the reporter to _____ the article, which had ballooned to twice its assigned length.",
-    options:["condense","make shorter and more concise","reduce down in overall length","cut back on the total amount of words"], correctIndex:0,
-    explanation:"\"Condense\" precisely names the task in one word. \"Reduce down\" and \"cut back on\" are redundant pairings — \"down\" and \"back\" add nothing to verbs that already imply decrease — the wordy habit this question targets." },
+    options:["condense","truncate","abbreviate","paraphrase"], correctIndex:0,
+    explanation:"\"Condense\" means to compress something into a shorter form while preserving its essential content, exactly what the editor wants for an overlong article. \"Truncate\" means to cut off abruptly at some point, losing whatever comes after, rather than compressing the whole; \"abbreviate\" properly applies to shortening individual words or phrases, not an entire article; and \"paraphrase\" means restating in different words, which doesn't necessarily make something shorter." },
 
   { id:"wb26", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:3,
     prompt:"Before closing the books, the bookkeeper had to _____ the two ledgers, which disagreed by several hundred dollars.",
-    options:["bring into agreement and correspondence with","reconcile","match up and make consistent with each other","square away and settle up completely"], correctIndex:1,
-    explanation:"\"Reconcile\" precisely names the accounting task of making two records agree, in one word. The other options spell out the same action in wordier, doubled phrasing, such as \"agreement and correspondence\" or \"match up and make consistent,\" which repeat the same idea twice over." },
+    options:["audit","reconcile","verify","amend"], correctIndex:1,
+    explanation:"\"Reconcile\" specifically means to resolve a discrepancy between two accounts so they match, exactly the bookkeeper's task. \"Audit\" means to formally examine records for accuracy, not necessarily to resolve a mismatch between two particular ledgers; \"verify\" means to confirm that a figure is correct, not to bring two conflicting figures into agreement; and \"amend\" means to correct or change an entry, which doesn't specifically address making the two ledgers consistent with each other." },
 
   { id:"wb27", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:1,
     prompt:"The two departments finally agreed to _____ their overlapping databases into a single system.",
-    options:["combine together into one unified whole","merge","join together so as to form a single entity","bring together and unify as one"], correctIndex:1,
-    explanation:"\"Merge\" already means to combine into one, so no further phrase is needed. \"Combine together into one unified whole\" is redundant three times over — \"together,\" \"into one,\" and \"unified whole\" all repeat the same idea." },
+    options:["link","merge","duplicate","synchronize"], correctIndex:1,
+    explanation:"\"Merge\" means to combine two things into a single unified whole, exactly what the departments agreed to do with their databases. \"Link\" means to connect two systems while keeping them separate, not combine them into one; \"duplicate\" means to make a copy of something, the opposite of consolidating into a single system; and \"synchronize\" means to keep two separate systems updated in parallel, not fold them into one." },
 
   { id:"wb28", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:3,
     prompt:"Because the two witnesses gave accounts that flatly _____ each other, the jury doubted both of their testimonies.",
-    options:["were completely at odds and in conflict with","stood in direct opposition and disagreement with","were mutually exclusive of and inconsistent with","contradicted"], correctIndex:3,
-    explanation:"\"Contradicted\" states the relationship precisely in one word. The alternatives pair two overlapping synonyms, such as \"odds and conflict\" or \"opposition and disagreement,\" to say the same thing at needless length." },
+    options:["corroborated","paralleled","echoed","contradicted"], correctIndex:3,
+    explanation:"\"Contradicted\" means directly stated the opposite, matching testimonies flatly at odds that made the jury doubt both. \"Corroborated\" means confirmed or supported, the reverse of what's described; \"paralleled\" and \"echoed\" both mean closely resembled or matched, again the opposite of two accounts in conflict." },
 
   { id:"wb29", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:6,
     prompt:"The new escrow arrangement was designed to _____ any need for the parties to renegotiate terms if the currency fluctuated.",
-    options:["effectively remove the future possibility of","do away with the necessity of having","obviate","make it so there would be no need for"], correctIndex:2,
-    explanation:"\"Obviate\" means to preempt or remove the need for something in advance, stated in a single precise word. The alternatives spell out the same idea across a full clause — smoothly enough that the redundancy is easy to miss, unlike the more obviously padded phrasing in easier items of this kind." },
+    options:["increase","reduce","obviate","postpone"], correctIndex:2,
+    explanation:"\"Obviate\" means to preemptively remove the need for something altogether, exactly what the escrow arrangement accomplishes regarding renegotiation. \"Increase\" would mean the arrangement makes renegotiation more likely, the opposite effect; \"reduce\" implies only a partial lessening of that need, not its complete removal; and \"postpone\" would merely delay when renegotiation might become necessary, not eliminate the underlying need for it." },
 
   { id:"wb30", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:8,
     prompt:"Passing through three layers of insulation was enough to _____ the signal until it was barely detectable.",
-    options:["gradually reduce and diminish","bring down to a considerably lower level of intensity","weaken to a noticeably reduced degree","attenuate"], correctIndex:3,
-    explanation:"\"Attenuate\" is the precise technical term for progressively weakening a signal or force, common in engineering and scientific writing. The other options describe the same process in smooth, plausible-sounding clauses that never quite announce themselves as redundant, which is what makes spotting the single correct word genuinely difficult here." },
+    options:["amplify","distort","isolate","attenuate"], correctIndex:3,
+    explanation:"\"Attenuate\" precisely describes a signal's gradual loss of strength as it passes through a medium, matching insulation weakening it until barely detectable. \"Amplify\" means the opposite, to increase a signal's strength, contradicting the described outcome; \"distort\" means to alter or corrupt a signal's shape or quality without necessarily reducing its strength; and \"isolate\" means to shield or separate a signal from outside interference, a protective function nearly opposite to weakening it." },
 
   { id:"wb31", type:"blank", category:"blank", sub:"Idiomatic Usage", difficulty:1,
     prompt:"Despite her age, the veteran climber proved _____ scaling peaks that defeated athletes half her age.",
@@ -621,18 +621,18 @@ const PLACEMENT_POOL = [
 
   { id:"wb43", type:"blank", category:"blank", sub:"Register", difficulty:3,
     prompt:"Counsel advised the client to _____ from making any public statement until the investigation concluded.",
-    options:["hold off","refrain","lay off","steer clear"], correctIndex:1,
-    explanation:"\"Refrain from\" is the formal register appropriate to legal advice. \"Hold off,\" \"lay off,\" and \"steer clear\" are conversational phrasings that would sound out of place in a legal memo." },
+    options:["desist","refrain","abstain","recoil"], correctIndex:1,
+    explanation:"\"Refrain from\" is the formal register appropriate to legal advice, precisely meaning to choose not to begin an action. \"Desist from\" is close in register but properly means to stop an action already in progress, not to avoid starting one; \"abstain from\" usually describes deliberately not partaking in something like a vote or indulgence, a mismatched connotation for withholding public comment; and \"recoil from\" suggests an instinctive, emotional flinching reaction rather than a calculated legal strategy counsel would recommend." },
 
   { id:"wb44", type:"blank", category:"blank", sub:"Register", difficulty:7,
     prompt:"The agency _____ the new emissions standards only after an eighteen-month public comment period.",
-    options:["got the word out on","promulgated","put out there","rolled out"], correctIndex:1,
-    explanation:"\"Promulgated\" is the precise formal term for officially announcing a new regulation, standard in legal and regulatory writing. \"Rolled out,\" \"put out there,\" and \"got the word out on\" are casual phrasings for making something public, ill-suited to describing a formal rule-making procedure." },
+    options:["ratified","promulgated","drafted","amended"], correctIndex:1,
+    explanation:"\"Promulgated\" is the precise formal term for officially announcing and putting a new regulation into effect, fitting a rule issued only after the full comment period concluded. \"Ratified\" means formally approved, typically by vote, which describes approval rather than official issuance; \"drafted\" describes only the writing of a proposed rule, a stage prior to its official announcement; and \"amended\" implies revising an existing standard, not announcing a brand-new one." },
 
   { id:"wb45", type:"blank", category:"blank", sub:"Register", difficulty:3,
     prompt:"The patient was instructed to _____ strenuous activity for at least six weeks following surgery.",
-    options:["avoid","steer clear of","lay off","stay away from"], correctIndex:0,
-    explanation:"\"Avoid\" is the precise, clinical term expected in a medical record. \"Steer clear of,\" \"lay off,\" and \"stay away from\" are informal expressions a clinician would not use in official documentation." },
+    options:["avoid","forgo","curb","resist"], correctIndex:0,
+    explanation:"\"Avoid\" is the precise clinical term instructing a patient not to engage in an activity at all, matching a doctor's order to abstain from strenuous activity entirely. \"Forgo\" implies voluntarily giving up something one would otherwise choose to do, a slightly different framing from a medical directive; \"curb\" means only to limit or reduce an activity, not eliminate it as the six-week restriction requires; and \"resist\" implies actively fighting off a temptation or urge, not simply following a medical instruction." },
 
   { id:"wb46", type:"blank", category:"blank", sub:"Register", difficulty:4,
     prompt:"Effective immediately, your employment with the company will be _____.",
@@ -641,23 +641,23 @@ const PLACEMENT_POOL = [
 
   { id:"wb47", type:"blank", category:"blank", sub:"Register", difficulty:7,
     prompt:"Researchers _____ the mechanism by which the enzyme catalyzes the reaction.",
-    options:["figured out","elucidated","got to the bottom of","nailed down"], correctIndex:1,
-    explanation:"\"Elucidated\" is the precise, formal verb for clarifying a mechanism in scientific writing. \"Figured out,\" \"got to the bottom of,\" and \"nailed down\" are colloquial phrasings unsuited to a research abstract." },
+    options:["postulated","elucidated","documented","conjectured"], correctIndex:1,
+    explanation:"\"Elucidated\" is the precise, formal verb for making a mechanism clear and fully understood, fitting the rigor expected in scientific writing about how an enzyme catalyzes a reaction. \"Postulated\" means merely proposed as a hypothesis, a step prior to actually explaining how something works; \"documented\" means recorded the mechanism in writing without necessarily explaining how it functions; and \"conjectured\" implies a speculative guess, at odds with the thorough, evidence-based explanation \"elucidated\" implies." },
 
   { id:"wb48", type:"blank", category:"blank", sub:"Register", difficulty:3,
     prompt:"The airline _____ the inconvenience caused to passengers during the three-day system outage.",
-    options:["is bummed about","feels bad about","is sorry about","regrets"], correctIndex:3,
-    explanation:"\"Regrets\" is the standard formal term in corporate apologies and press releases. \"Is bummed about\" and \"feels bad about\" are casual expressions of personal emotion, and \"is sorry about\" is close enough to sound plausible in a press release, even though it still reads as a shade too personal for the standard corporate formula." },
+    options:["disputes","acknowledges","laments","regrets"], correctIndex:3,
+    explanation:"\"Regrets\" is the standard formal term for corporate apologies, precisely conveying remorse for an inconvenience caused. \"Disputes\" would mean the airline denies responsibility, the opposite stance; \"acknowledges\" merely admits the outage happened without expressing any apology for it; and \"laments\" expresses a deeper, more mournful sorrow suited to genuine loss or tragedy, an overstatement for a routine service disruption." },
 
   { id:"wb49", type:"blank", category:"blank", sub:"Register", difficulty:7,
     prompt:"The board voted to _____ the chief financial officer's proposed budget for the coming fiscal year.",
-    options:["ratify","give the green light to","sign off on","rubber-stamp"], correctIndex:0,
-    explanation:"\"Ratify\" is the formal term for officially approving a proposal, fitting a board resolution. \"Give the green light to\" and \"sign off on\" are casual idioms, and \"rubber-stamp\" additionally implies approval without real scrutiny — the wrong connotation for a formal resolution too." },
+    options:["ratify","endorse","authorize","sanction"], correctIndex:0,
+    explanation:"\"Ratify\" precisely means to formally approve something, typically by an official vote, fitting a board's approval of a budget already proposed. \"Endorse\" means to publicly express support for something without necessarily taking the formal approving action itself; \"authorize\" means to grant permission for something to proceed, a different act from approving a completed proposal; and \"sanction\" is ambiguous, since it can also mean to penalize, making it a riskier, less precise choice." },
 
   { id:"wb50", type:"blank", category:"blank", sub:"Register", difficulty:2,
     prompt:"I _____ this candidate for the position without reservation.",
-    options:["put in a good word for","give a shout-out to","recommend","root for"], correctIndex:2,
-    explanation:"\"Recommend\" is the standard, formal verb for an official letter of recommendation. \"Put in a good word for,\" \"give a shout-out to,\" and \"root for\" are casual expressions inappropriate for formal academic correspondence." },
+    options:["nominate","second","recommend","champion"], correctIndex:2,
+    explanation:"\"Recommend\" is the standard, formal verb used in a letter of recommendation to endorse a candidate's suitability. \"Nominate\" means to formally put someone forward as a candidate for a role or honor, not to vouch for them once already under consideration; \"second\" means to formally support a motion someone else has already proposed, a parliamentary sense that doesn't fit this context; and \"champion,\" while enthusiastic, carries a more informal, crusading connotation ill-suited to the understated register of formal academic correspondence." },
 
   { id:"wx1", type:"blank", category:"blank", sub:"Commonly Confused Words", difficulty:1,
     prompt:"The startup revamped _____ entire onboarding process last quarter.",
@@ -711,28 +711,28 @@ const PLACEMENT_POOL = [
 
   { id:"wx11", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:1,
     prompt:"_____ employee must badge in before entering the server room.",
-    options:["Each and every","Every single","Each","Each individual"], correctIndex:2,
-    explanation:"\"Each\" alone is sufficient and precise. \"Each and every,\" \"every single,\" and \"each individual\" all add extra words that repeat a meaning already contained in \"each.\"" },
+    options:["No","Some","Each","One"], correctIndex:2,
+    explanation:"\"Each\" makes clear that the badge-in rule applies individually and without exception to every employee. \"No employee\" would mean the opposite, that nobody is required to badge in; \"some employee\" suggests only an unspecified individual is covered, not a blanket policy; and \"one employee\" implies the requirement singles out just a single person rather than applying to the whole staff." },
 
   { id:"wx12", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:3,
     prompt:"The two departments decided to _____ their budgets into a single fund.",
-    options:["combine together","unify as one","combine","join up together"], correctIndex:2,
-    explanation:"\"Combine\" already means to bring together, so adding \"together,\" \"as one,\" or \"up together\" restates an idea the verb already expresses, making the phrase redundant." },
+    options:["allocate","divide","combine","compare"], correctIndex:2,
+    explanation:"\"Combine\" means to bring separate things together into one, matching the decision to merge two budgets into a single fund. \"Allocate\" means to assign or distribute portions of something, the opposite kind of action; \"divide\" means to split apart, the reverse of what the departments agreed to do; and \"compare\" means merely to examine two things side by side without joining them." },
 
   { id:"wx13", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:5,
     prompt:"The report's conclusion simply _____ what the introduction had already said, without adding any new evidence.",
-    options:["reiterated again","recapped back","restated","repeated over again"], correctIndex:2,
-    explanation:"\"Restated\" conveys the idea cleanly. \"Reiterated again\" is redundant because \"reiterate\" already means to say again, and \"recapped back\" and \"repeated over again\" contain similar built-in repetition." },
+    options:["referenced","revised","restated","reinterpreted"], correctIndex:2,
+    explanation:"\"Restated\" means expressed the same idea again in the same terms, matching a conclusion that repeats the introduction's point without adding anything new. \"Referenced\" would mean merely pointing back to the earlier point without actually repeating its content; \"revised\" implies the conclusion updated or changed the original point, adding something new; and \"reinterpreted\" implies giving the original point a new spin or meaning, not simply saying it again." },
 
   { id:"wx14", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:8,
     prompt:"After hours of debate, the board finally reached a _____ to postpone the product launch.",
-    options:["general consensus","unanimous consensus","consensus","mutual consensus"], correctIndex:2,
-    explanation:"\"Consensus\" already means general agreement among a group, so pairing it with \"general,\" \"unanimous,\" or \"mutual\" is redundant, even though these phrases are extremely common in everyday speech." },
+    options:["majority","compromise","consensus","verdict"], correctIndex:2,
+    explanation:"\"Consensus\" precisely denotes a decision every member has come to agree on together, exactly what \"reached\" implies after extended debate. \"Majority\" refers to a vote count where more than half prevail, which doesn't require full agreement; \"compromise\" implies each side conceded some of what it wanted, a different process than converging on shared agreement; and \"verdict\" specifically describes a formal judgment, typically in a legal or adjudicative setting, not a decision reached through the board's own debate." },
 
   { id:"wx15", type:"blank", category:"blank", sub:"Wordiness & Redundancy", difficulty:9,
     prompt:"Given the sensitive nature of the data, the auditors were asked to _____ every transaction from the past year.",
-    options:["look at very closely and carefully","scrutinize","go over again in painstaking detail","examine down to the very last detail"], correctIndex:1,
-    explanation:"\"Scrutinize\" precisely means to examine closely and carefully in a single word. The other options pad the same meaning into wordy phrases that a concise writer would trim." },
+    options:["peruse","scrutinize","review","skim"], correctIndex:1,
+    explanation:"\"Scrutinize\" specifically means to examine something with intense, critical thoroughness, matching sensitive data that calls for auditors to comb through every transaction closely. \"Peruse,\" despite sounding similarly formal, traditionally implies reading over something at leisure rather than combing through it with rigor; \"review\" suggests a general look-over rather than an intensive, detail-level check; and \"skim\" means to go over something quickly and superficially, nearly the opposite of the careful examination the sentence calls for." },
 
   { id:"wx16", type:"blank", category:"blank", sub:"Idiomatic Usage", difficulty:4,
     prompt:"She has always had a knack _____ languages, picking up French and Mandarin with surprising ease.",
@@ -761,18 +761,18 @@ const PLACEMENT_POOL = [
 
   { id:"wx21", type:"blank", category:"blank", sub:"Register", difficulty:1,
     prompt:"In the formal business email, she wrote: \"I am writing to _____ that the shipment has been delayed.\"",
-    options:["holler at you","inform you","give you a heads-up","let you know"], correctIndex:1,
-    explanation:"\"Inform you\" matches the formal register of a business email. \"Let you know,\" \"give you a heads-up,\" and \"holler at you\" grow progressively more casual and are out of place in formal correspondence." },
+    options:["assure you","inform you","remind you","caution you"], correctIndex:1,
+    explanation:"\"Inform you\" precisely conveys that new information is being communicated for the first time, matching a formal notice about a shipment delay. \"Assure you\" means to promise or guarantee something, not simply convey a fact; \"remind you\" implies the recipient already knew this and is merely being prompted again; and \"caution you\" means to warn of a danger or risk, an overly dramatic framing for a routine shipping update." },
 
   { id:"wx22", type:"blank", category:"blank", sub:"Register", difficulty:3,
     prompt:"The academic paper's introduction should _____ the central argument clearly before moving into supporting details.",
-    options:["get into","lay out","state","spell out"], correctIndex:2,
-    explanation:"\"State\" is the plain, formal verb expected in academic writing. \"Spell out,\" \"lay out,\" and \"get into\" are all fine in conversation but read as too informal for a scholarly introduction." },
+    options:["imply","assume","state","reference"], correctIndex:2,
+    explanation:"\"State\" is the plain, formal verb for directly presenting the central argument, matching academic writing's expectation of explicit clarity before elaboration. \"Imply\" means to suggest something indirectly rather than say it outright, the opposite of stating a thesis clearly; \"assume\" means to take something as given without asserting or proving it; and \"reference\" means merely to point to or mention something in passing, not to present it as the paper's central claim." },
 
   { id:"wx23", type:"blank", category:"blank", sub:"Register", difficulty:5,
     prompt:"The memo asked employees to _____ any concerns with their direct supervisor before escalating the issue further.",
-    options:["gripe about","sound off about","raise","bring up"], correctIndex:2,
-    explanation:"\"Raise\" is the standard, professionally neutral verb for a workplace memo. \"Bring up\" is a bit too casual for formal instructions, while \"gripe about\" and \"sound off about\" carry an informal, complaining connotation unsuited to a memo." },
+    options:["share","clear","raise","confirm"], correctIndex:2,
+    explanation:"\"Raise\" is the standard, professionally neutral verb for formally bringing a concern to someone's attention for discussion, matching the memo's chain-of-escalation process. \"Share\" merely means to convey information, without the sense of surfacing an issue that needs a response; \"clear\" idiomatically means to get official approval or permission for something, not to voice a concern; and \"confirm\" means to verify that something is accurate, not to bring it up in the first place." },
 
   { id:"wx24", type:"blank", category:"blank", sub:"Register", difficulty:7,
     prompt:"Texting his roommate about running late, he wrote: \"Sorry, stuck in traffic, I'll be there _____.\"",
@@ -781,8 +781,9 @@ const PLACEMENT_POOL = [
 
   { id:"wx25", type:"blank", category:"blank", sub:"Register", difficulty:8,
     prompt:"In the joint communique, the two nations agreed to _____ their ongoing border dispute through continued dialogue.",
-    options:["hash out","duke it out","address","iron out"], correctIndex:2,
-    explanation:"\"Address\" matches the formal, diplomatic register of a joint communique. \"Hash out,\" \"iron out,\" and especially \"duke it out\" are idiomatic and conversational, appropriate for casual speech but not formal international statements." },
+    options:["escalate","concede","address","adjudicate"], correctIndex:2,
+    explanation:"\"Address\" matches the formal, diplomatic register of a joint communique while accurately describing an ongoing effort to engage with the dispute through talks. \"Escalate\" would mean to intensify the conflict, the opposite of pursuing continued dialogue; \"concede\" implies one side simply yielding the disputed point, not the mutual engagement the communique describes; and \"adjudicate\" specifically means to resolve a dispute through a formal legal ruling, typically by a third party, not through the nations' own ongoing dialogue." },
+
 
   /* ---- Vocabulary (50) ---- */
   { id:"vc1", type:"vocab", category:"vocab", sub:"Word Meaning in Context", difficulty:5,
