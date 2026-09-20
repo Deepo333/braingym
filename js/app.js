@@ -704,7 +704,7 @@
 
   function renderSettingsSheet(){
     return '<div class="overlay" data-action="close-settings">' +
-      '<div class="sheet stack" onclick="event.stopPropagation()">' +
+      '<div class="sheet stack" data-action="noop">' +
         '<div class="row-between"><h3 class="title-md">Settings</h3><button class="icon-btn" data-action="close-settings">' + svgIcon("close") + "</button></div>" +
         '<button class="btn btn-outline" data-action="retake-placement">Retake placement test</button>' +
         '<button class="btn btn-outline" style="color:var(--danger); border-color:var(--danger-bg);" data-action="reset-all">Reset all progress</button>' +
