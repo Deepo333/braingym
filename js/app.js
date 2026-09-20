@@ -54,9 +54,13 @@
       (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
   }
 
-  /* ---------------- passages lookup ---------------- */
+  /* ---------------- placement pool lookup ---------------- */
   const PASSAGES = {};
-  PLACEMENT_QUESTIONS.forEach(function(q){ if(q.passage) PASSAGES[q.passageId] = q.passage; });
+  const PLACEMENT_BY_ID = {};
+  PLACEMENT_POOL.forEach(function(q){
+    PLACEMENT_BY_ID[q.id] = q;
+    if(q.passage) PASSAGES[q.passageId] = q.passage;
+  });
   function getPassageFor(q){ return q.passage || (q.passageId ? PASSAGES[q.passageId] : null); }
 
   /* ---------------- state ---------------- */
@@ -67,6 +71,11 @@
   let history = load("history", []);
   let lastLessonResult = load("lastLessonResult", null);
   let dismissedStandaloneNotice = load("dismissedStandaloneNotice", false);
+
+  if(placementProgress && placementProgress.order.some(function(id){ return !PLACEMENT_BY_ID[id]; })){
+    placementProgress = null;
+    save("placementProgress", null);
+  }
 
   let view = "home";
   let viewParams = {};
@@ -85,10 +94,36 @@
   function goHome(){ navigate("home"); }
 
   /* ---------------- placement test ---------------- */
+  const PLACEMENT_DRAW_COUNTS = { error:12, blank:10, vocab:8 };
+  const PLACEMENT_READING_PASSAGES = 2; // 2 passages x 5 questions each = 10 reading questions
+  function sampleN(arr, n){ return shuffle(arr).slice(0, n); }
+  function drawPlacementSet(){
+    const byCat = { error:[], blank:[], vocab:[], reading:[] };
+    PLACEMENT_POOL.forEach(function(q){ byCat[q.category].push(q); });
+
+    const units = [];
+    Object.keys(PLACEMENT_DRAW_COUNTS).forEach(function(cat){
+      sampleN(byCat[cat], PLACEMENT_DRAW_COUNTS[cat]).forEach(function(q){ units.push([q]); });
+    });
+
+    const byPassage = {};
+    byCat.reading.forEach(function(q){
+      if(!byPassage[q.passageId]) byPassage[q.passageId] = [];
+      byPassage[q.passageId].push(q);
+    });
+    sampleN(Object.keys(byPassage), PLACEMENT_READING_PASSAGES).forEach(function(pid){
+      units.push(byPassage[pid]);
+    });
+
+    const questions = [];
+    shuffle(units).forEach(function(unit){ unit.forEach(function(q){ questions.push(q); }); });
+    return questions;
+  }
   function startPlacement(){
+    const drawn = drawPlacementSet();
     placementProgress = {
-      order: PLACEMENT_QUESTIONS.map(function(q){ return q.id; }),
-      answers: new Array(PLACEMENT_QUESTIONS.length).fill(null),
+      order: drawn.map(function(q){ return q.id; }),
+      answers: new Array(drawn.length).fill(null),
       currentIndex: 0,
       startedAt: Date.now()
     };
@@ -133,12 +168,13 @@
     const byCat = {};
     Object.keys(CATEGORY_NAMES).forEach(function(c){ byCat[c] = { correct:0, total:0 }; });
     let correct = 0;
-    PLACEMENT_QUESTIONS.forEach(function(q, i){
+    placementProgress.order.forEach(function(id, i){
+      const q = PLACEMENT_BY_ID[id];
       const given = placementProgress.answers[i];
       byCat[q.category].total++;
       if(given === q.correctIndex){ correct++; byCat[q.category].correct++; }
     });
-    const scorePercent = Math.round((correct / PLACEMENT_QUESTIONS.length) * 100);
+    const scorePercent = Math.round((correct / placementProgress.order.length) * 100);
     const level = levelFromPercent(scorePercent);
     const breakdown = Object.keys(byCat).map(function(c){
       const b = byCat[c];
@@ -150,7 +186,7 @@
       levelName: LEVEL_NAMES[level],
       scorePercent: scorePercent,
       correct: correct,
-      total: PLACEMENT_QUESTIONS.length,
+      total: placementProgress.order.length,
       breakdown: breakdown,
       completedAt: Date.now()
     };
@@ -485,7 +521,7 @@
 
   function renderPlacement(){
     const idx = placementProgress.currentIndex;
-    const q = PLACEMENT_QUESTIONS[idx];
+    const q = PLACEMENT_BY_ID[placementProgress.order[idx]];
     const selected = placementProgress.answers[idx];
     const isLast = idx === placementProgress.order.length - 1;
     return atmosphere() +

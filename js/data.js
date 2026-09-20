@@ -26,8 +26,8 @@ const CATEGORY_NAMES = {
   reading: "Reading Comprehension"
 };
 
-/* =================== PLACEMENT TEST (40 questions) =================== */
-const PLACEMENT_QUESTIONS = [
+/* =================== PLACEMENT TEST POOL =================== */
+const PLACEMENT_POOL = [
   // ---- Error identification (12) ----
   { id:"pe1", type:"error", category:"error", sub:"Sequence of Tense",
     prompt:"The analyst reported that the company's earnings ⟦had exceeded⟧ forecasts every quarter since the policy took effect, a trend that continues today.",
