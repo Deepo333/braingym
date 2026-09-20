@@ -72,7 +72,10 @@
   let lastLessonResult = load("lastLessonResult", null);
   let dismissedStandaloneNotice = load("dismissedStandaloneNotice", false);
 
-  if(placementProgress && placementProgress.order.some(function(id){ return !PLACEMENT_BY_ID[id]; })){
+  if(placementProgress && (
+    !placementProgress.sequence || !placementProgress.categoryDifficulty ||
+    placementProgress.order.some(function(id){ return id && !PLACEMENT_BY_ID[id]; })
+  )){
     placementProgress = null;
     save("placementProgress", null);
   }
@@ -94,36 +97,49 @@
   function goHome(){ navigate("home"); }
 
   /* ---------------- placement test ---------------- */
-  const PLACEMENT_DRAW_COUNTS = { error:12, blank:10, vocab:8 };
-  const PLACEMENT_READING_PASSAGES = 2; // 2 passages x 5 questions each = 10 reading questions
-  function sampleN(arr, n){ return shuffle(arr).slice(0, n); }
-  function drawPlacementSet(){
-    const byCat = { error:[], blank:[], vocab:[], reading:[] };
-    PLACEMENT_POOL.forEach(function(q){ byCat[q.category].push(q); });
+  // Adaptive: each category tracks its own difficulty (1-10, starting at 5)
+  // independently. A correct answer raises that category's difficulty by 1
+  // for its next question; an incorrect answer lowers it by 1. This is
+  // measurement-only — no correct/incorrect feedback is ever shown during
+  // the test, so the adjustment happens silently in the background.
+  const PLACEMENT_DRAW_COUNTS = { error:12, blank:10, vocab:8, reading:10 }; // 40 total
+  const PLACEMENT_START_DIFFICULTY = 5;
 
-    const units = [];
+  function buildPlacementSequence(){
+    const seq = [];
     Object.keys(PLACEMENT_DRAW_COUNTS).forEach(function(cat){
-      sampleN(byCat[cat], PLACEMENT_DRAW_COUNTS[cat]).forEach(function(q){ units.push([q]); });
+      for(let i = 0; i < PLACEMENT_DRAW_COUNTS[cat]; i++) seq.push(cat);
     });
-
-    const byPassage = {};
-    byCat.reading.forEach(function(q){
-      if(!byPassage[q.passageId]) byPassage[q.passageId] = [];
-      byPassage[q.passageId].push(q);
+    return shuffle(seq);
+  }
+  function questionDifficulty(q){
+    // Falls back to the starting difficulty (degrading to a plain random
+    // pick within the tier) for any pool item that isn't rated yet.
+    return typeof q.difficulty === "number" ? q.difficulty : PLACEMENT_START_DIFFICULTY;
+  }
+  function pickAdaptiveQuestion(cat, targetDifficulty, usedIds){
+    const candidates = PLACEMENT_POOL.filter(function(q){ return q.category === cat && !usedIds[q.id]; });
+    if(!candidates.length) return null;
+    let bestDist = Infinity;
+    candidates.forEach(function(q){
+      const dist = Math.abs(questionDifficulty(q) - targetDifficulty);
+      if(dist < bestDist) bestDist = dist;
     });
-    sampleN(Object.keys(byPassage), PLACEMENT_READING_PASSAGES).forEach(function(pid){
-      units.push(byPassage[pid]);
-    });
-
-    const questions = [];
-    shuffle(units).forEach(function(unit){ unit.forEach(function(q){ questions.push(q); }); });
-    return questions;
+    const tier = candidates.filter(function(q){ return Math.abs(questionDifficulty(q) - targetDifficulty) === bestDist; });
+    return tier[Math.floor(Math.random() * tier.length)];
   }
   function startPlacement(){
-    const drawn = drawPlacementSet();
+    const sequence = buildPlacementSequence();
+    const categoryDifficulty = {};
+    Object.keys(PLACEMENT_DRAW_COUNTS).forEach(function(cat){ categoryDifficulty[cat] = PLACEMENT_START_DIFFICULTY; });
+    const order = new Array(sequence.length).fill(null);
+    const first = pickAdaptiveQuestion(sequence[0], categoryDifficulty[sequence[0]], {});
+    order[0] = first.id;
     placementProgress = {
-      order: drawn.map(function(q){ return q.id; }),
-      answers: new Array(drawn.length).fill(null),
+      sequence: sequence,
+      order: order,
+      categoryDifficulty: categoryDifficulty,
+      answers: new Array(sequence.length).fill(null),
       currentIndex: 0,
       startedAt: Date.now()
     };
@@ -141,9 +157,26 @@
     render();
   }
   function nextPlacementQuestion(){
-    if(placementProgress.answers[placementProgress.currentIndex] === null) return;
-    if(placementProgress.currentIndex < placementProgress.order.length - 1){
-      placementProgress.currentIndex++;
+    const idx = placementProgress.currentIndex;
+    if(placementProgress.answers[idx] === null) return;
+    if(idx < placementProgress.sequence.length - 1){
+      const nextIdx = idx + 1;
+      if(!placementProgress.order[nextIdx]){
+        // Only adjust difficulty and pick the next question the first time
+        // we advance past this slot — revisiting via Back/Next afterward
+        // must not double-apply the adjustment.
+        const answeredQ = PLACEMENT_BY_ID[placementProgress.order[idx]];
+        const wasCorrect = placementProgress.answers[idx] === answeredQ.correctIndex;
+        const cat = answeredQ.category;
+        placementProgress.categoryDifficulty[cat] = clamp(placementProgress.categoryDifficulty[cat] + (wasCorrect ? 1 : -1), 1, 10);
+
+        const usedIds = {};
+        placementProgress.order.forEach(function(id){ if(id) usedIds[id] = true; });
+        const nextCat = placementProgress.sequence[nextIdx];
+        const picked = pickAdaptiveQuestion(nextCat, placementProgress.categoryDifficulty[nextCat], usedIds);
+        placementProgress.order[nextIdx] = picked.id;
+      }
+      placementProgress.currentIndex = nextIdx;
       save("placementProgress", placementProgress);
       navigate("placement");
     } else {
@@ -519,6 +552,12 @@
       (showSettings ? renderSettingsSheet() : "");
   }
 
+  function debugAdaptiveBar(q){
+    // TEMPORARY DEBUG DISPLAY — remove once adaptive difficulty is verified.
+    return '<div class="card-soft" style="border:1px dashed #d18b2f; background:#fff7e8; font-family:monospace; font-size:12px; line-height:1.6;">' +
+      '<strong>DEBUG</strong> &nbsp;difficulty: ' + questionDifficulty(q) + '/10 &nbsp;·&nbsp; category: ' + esc(CATEGORY_NAMES[q.category]) + ' &nbsp;·&nbsp; sub-skill: ' + esc(q.sub) +
+      '</div>';
+  }
   function renderPlacement(){
     const idx = placementProgress.currentIndex;
     const q = PLACEMENT_BY_ID[placementProgress.order[idx]];
@@ -528,6 +567,7 @@
       headerBar({}) +
       '<main id="app-main" class="app-main screen">' +
         progressBar(idx + 1, placementProgress.order.length) +
+        debugAdaptiveBar(q) +
         '<div class="card stack">' +
           '<span class="pill pill-amethyst">' + esc(CATEGORY_NAMES[q.category]) + "</span>" +
           passageHTML(q) +
