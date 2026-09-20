@@ -262,15 +262,71 @@
     if(pct < 85) return 4;
     return 5;
   }
+  // A category's "ceiling" is the highest difficulty (1-10) the learner was
+  // consistently answering correctly by the end of the test — not just the
+  // single hardest question they happened to get right, which could be a
+  // fluke. Only the back half of that category's questions is considered
+  // (the adaptive engine is still exploring early on), and a candidate
+  // ceiling only counts if the learner also got most of the easier
+  // same-window questions right, i.e. it has real support rather than
+  // being an isolated lucky guess.
+  function categoryCeiling(items){
+    if(!items.length) return PLACEMENT_START_DIFFICULTY;
+    const lateCount = Math.max(3, Math.ceil(items.length / 2));
+    const lateItems = items.slice(-lateCount);
+    const difficulties = Array.from(new Set(lateItems.map(function(i){ return i.difficulty; })))
+      .sort(function(a, b){ return b - a; });
+    for(let k = 0; k < difficulties.length; k++){
+      const d = difficulties[k];
+      const atOrBelow = lateItems.filter(function(i){ return i.difficulty <= d; });
+      const correctAtOrBelow = atOrBelow.filter(function(i){ return i.correct; }).length;
+      const wasCorrectAtD = lateItems.some(function(i){ return i.difficulty === d && i.correct; });
+      if(wasCorrectAtD && (correctAtOrBelow / atOrBelow.length) >= 0.6) return clamp(d, 1, 10);
+    }
+    // Nothing cleared the consistency bar: fall back to the hardest correct
+    // answer in the late window, or the easiest item attempted if none.
+    const correctDifficulties = lateItems.filter(function(i){ return i.correct; }).map(function(i){ return i.difficulty; });
+    const fallback = correctDifficulties.length
+      ? Math.max.apply(null, correctDifficulties)
+      : Math.min.apply(null, lateItems.map(function(i){ return i.difficulty; }));
+    return clamp(fallback, 1, 10);
+  }
+  function subSkillBreakdown(items){
+    const bySkill = {};
+    items.forEach(function(i){
+      if(!bySkill[i.sub]) bySkill[i.sub] = { correct:0, total:0, difficultySum:0 };
+      const b = bySkill[i.sub];
+      b.total++;
+      b.difficultySum += i.difficulty;
+      if(i.correct) b.correct++;
+    });
+    const out = {};
+    Object.keys(bySkill).forEach(function(s){
+      const b = bySkill[s];
+      out[s] = {
+        correct: b.correct,
+        total: b.total,
+        pct: Math.round((b.correct / b.total) * 100),
+        avgDifficulty: Math.round((b.difficultySum / b.total) * 10) / 10
+      };
+    });
+    return out;
+  }
   function finishPlacement(){
     const byCat = {};
-    Object.keys(CATEGORY_NAMES).forEach(function(c){ byCat[c] = { correct:0, total:0 }; });
+    const itemsByCat = {};
+    Object.keys(CATEGORY_NAMES).forEach(function(c){ byCat[c] = { correct:0, total:0 }; itemsByCat[c] = []; });
     let correct = 0;
     placementProgress.order.forEach(function(id, i){
       const q = PLACEMENT_BY_ID[id];
       const given = placementProgress.answers[i];
+      const wasCorrect = given === q.correctIndex;
       byCat[q.category].total++;
-      if(given === q.correctIndex){ correct++; byCat[q.category].correct++; }
+      if(wasCorrect){ correct++; byCat[q.category].correct++; }
+      // Chronological per-category log (order/answers are already in the
+      // sequence the questions were actually presented), the raw material
+      // both the ceiling and sub-skill calculations below are built from.
+      itemsByCat[q.category].push({ difficulty: questionDifficulty(q), correct: wasCorrect, sub: q.sub });
     });
     const scorePercent = Math.round((correct / placementProgress.order.length) * 100);
     const level = levelFromPercent(scorePercent);
@@ -279,6 +335,23 @@
       return { category:c, name:CATEGORY_NAMES[c], correct:b.correct, total:b.total, pct: b.total ? Math.round((b.correct / b.total) * 100) : 0 };
     }).sort(function(a,b){ return b.pct - a.pct; });
 
+    // Deeper, structured scoring for later use (detailed results display,
+    // personalized curriculum) — additive to the summary fields above,
+    // which the current results screen already relies on unchanged.
+    const categoryScores = {};
+    Object.keys(itemsByCat).forEach(function(c){
+      const items = itemsByCat[c];
+      if(!items.length) return;
+      categoryScores[c] = {
+        name: CATEGORY_NAMES[c],
+        ceiling: categoryCeiling(items),
+        correct: byCat[c].correct,
+        total: byCat[c].total,
+        pct: byCat[c].total ? Math.round((byCat[c].correct / byCat[c].total) * 100) : 0,
+        subSkills: subSkillBreakdown(items)
+      };
+    });
+
     placementResult = {
       level: level,
       levelName: LEVEL_NAMES[level],
@@ -286,6 +359,7 @@
       correct: correct,
       total: placementProgress.order.length,
       breakdown: breakdown,
+      categoryScores: categoryScores,
       completedAt: Date.now()
     };
     save("placementResult", placementResult);
