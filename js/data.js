@@ -24,8 +24,11 @@ const CATEGORY_NAMES = {
   error: "Grammar & Sentence Errors",
   blank: "Word Choice",
   vocab: "Vocabulary",
-  reading: "Reading Comprehension"
+  spelling: "Spelling"
 };
+// Reading Comprehension is temporarily excluded from the active placement
+// categories above (may be added back later) — its 50 pool questions stay
+// in PLACEMENT_POOL below, just unused, so nothing is lost.
 
 /* =================== PLACEMENT TEST POOL =================== */
 const PLACEMENT_POOL = [
@@ -1042,6 +1045,257 @@ const PLACEMENT_POOL = [
     prompt:"The final sentence of the passage functions primarily to:",
     options:["resolve the dispute by declaring stewardship programs the correct approach","reframe the entire preceding disagreement as fundamentally a question about who should weigh a concentrated benefit against a diffuse cost","introduce a new argument that neither physicians nor stewardship advocates have raised","summarize the biological mechanism by which antibiotic resistance spreads"], correctIndex:1,
     explanation:"The final sentence explicitly reframes the entire disagreement in these terms. It doesn't resolve the dispute in favor of either side, and it synthesizes points already made rather than introducing a wholly new argument; the biological mechanism of resistance is explained earlier, not in this final sentence." },
+
+  /* ---- Spelling (50) ---- */
+  { id:"sp1", type:"spelling", category:"spelling", sub:"Commonly Misspelled Words", difficulty:4,
+    prompt:"Choose the correctly spelled word that fits: \"I will ______ come to the party this weekend.\"",
+    options:["definitely","definately","definitly","definetly"], correctIndex:0,
+    explanation:"\"Definitely\" contains \"finite\" plus the suffix \"-ly,\" with an i, not an a, in the third syllable. The common error \"definately\" wrongly swaps that letter for an a, perhaps by analogy with words like \"separate.\"" },
+
+  { id:"sp2", type:"spelling", category:"spelling", sub:"Commonly Misspelled Words", difficulty:6,
+    prompt:"Choose the correctly spelled word that fits: \"She felt so ______ when she tripped in front of the class.\"",
+    options:["embarassed","embarrassed","embarrased","emberrassed"], correctIndex:1,
+    explanation:"The correct form doubles both the r and the s (em-bar-rass-ed). The frequent mistake drops one of these doubled consonants, as in \"embarassed.\"" },
+
+  { id:"sp3", type:"spelling", category:"spelling", sub:"Commonly Misspelled Words", difficulty:7,
+    prompt:"Choose the correctly spelled word that fits: \"The volcano's eruption was a rare ______ in that region.\"",
+    options:["occurance","occurence","occurrence","ocurrence"], correctIndex:2,
+    explanation:"The correct form doubles both the c and the r and ends in \"-ence,\" not \"-ance.\" Writers often drop the second r, giving \"occurence.\"" },
+
+  { id:"sp4", type:"spelling", category:"spelling", sub:"Commonly Misspelled Words", difficulty:7,
+    prompt:"Choose the correctly spelled word that fits: \"The hotel can ______ up to four guests per room.\"",
+    options:["acommodate","accomodate","accomadate","accommodate"], correctIndex:3,
+    explanation:"The correct form doubles both the c and the m. The most common slip drops one of these, giving \"accomodate.\"" },
+
+  { id:"sp5", type:"spelling", category:"spelling", sub:"Commonly Misspelled Words", difficulty:6,
+    prompt:"Choose the correctly spelled word that fits: \"Regular ______ keeps the car running smoothly.\"",
+    options:["maintenance","maintenence","maintainance","maintenanace"], correctIndex:0,
+    explanation:"The correct form keeps the root \"maintain\" but drops the second a, ending in \"-enance.\" A common error respells it \"maintainance,\" keeping the full root \"maintain\" visible." },
+
+  { id:"sp6", type:"spelling", category:"spelling", sub:"Commonly Misspelled Words", difficulty:8,
+    prompt:"Choose the correctly spelled word that fits: \"Please fill out this ______ before your appointment.\"",
+    options:["questionaire","questionnaire","questionnair","questionnairre"], correctIndex:1,
+    explanation:"Borrowed from French, the correct form doubles the n before \"-aire.\" The frequent mistake writes only one n, giving \"questionaire.\"" },
+
+  { id:"sp7", type:"spelling", category:"spelling", sub:"Commonly Misspelled Words", difficulty:9,
+    prompt:"Choose the correctly spelled word that fits: \"She works as a ______ between the two departments.\"",
+    options:["liason","liaision","liaison","layson"], correctIndex:2,
+    explanation:"The correct French-derived spelling has ai then a second i before son. People often drop that second i, writing \"liason.\"" },
+
+  { id:"sp8", type:"spelling", category:"spelling", sub:"Commonly Misspelled Words", difficulty:10,
+    prompt:"Choose the correctly spelled word that fits: \"He is a ______ worker who double-checks every detail.\"",
+    options:["conscientous","conscienscious","consciencious","conscientious"], correctIndex:3,
+    explanation:"The correct form contains \"science\" inside it and ends \"-tious.\" Many writers misplace the letters as \"consciencious\" or drop the ti entirely." },
+
+  { id:"sp9", type:"spelling", category:"spelling", sub:"Commonly Misspelled Words", difficulty:5,
+    prompt:"Choose the correctly spelled word that fits: \"His ______ of French words is excellent.\"",
+    options:["pronunciation","pronounciation","pronuntiation","pronunceation"], correctIndex:0,
+    explanation:"The correct form drops the o that appears in the verb \"pronounce.\" The common mistake keeps that o, writing \"pronounciation.\"" },
+
+  { id:"sp10", type:"spelling", category:"spelling", sub:"Commonly Misspelled Words", difficulty:6,
+    prompt:"Choose the correctly spelled word that fits: \"Voting is both a right and a ______.\"",
+    options:["priviledge","privilege","privelege","priviege"], correctIndex:1,
+    explanation:"The correct form has no d and ends in \"-lege,\" not \"-ledge.\" The frequent error adds a d, writing \"priviledge\" by analogy with \"knowledge.\"" },
+
+  { id:"sp11", type:"spelling", category:"spelling", sub:"Homophones", difficulty:4,
+    prompt:"Choose the correctly spelled word that fits: \"She bought new ______ for writing thank-you notes.\"",
+    options:["stationary","staionery","stationery","stationerry"], correctIndex:2,
+    explanation:"\"Stationery\" (with an e) refers to paper and envelopes; remember \"e for envelope.\" Writing \"stationary\" instead spells the sound-alike word meaning not moving." },
+
+  { id:"sp12", type:"spelling", category:"spelling", sub:"Homophones", difficulty:5,
+    prompt:"Choose the correctly spelled word that fits: \"Honesty is a core ______ she lives by.\"",
+    options:["princple","prinicple","principal","principle"], correctIndex:3,
+    explanation:"\"Principle\" (ending -le) means a fundamental rule; a rule is a principLE. \"Principal\" is the sound-alike word for a school head or a main, primary thing." },
+
+  { id:"sp13", type:"spelling", category:"spelling", sub:"Homophones", difficulty:4,
+    prompt:"Choose the correctly spelled word that fits: \"He gave her a nice ______ on her presentation.\"",
+    options:["compliment","complement","complament","complimant"], correctIndex:0,
+    explanation:"\"Compliment\" (with an i) means a nice remark; a friend gives you a compliment. \"Complement\" (with an e) means something that completes another thing." },
+
+  { id:"sp14", type:"spelling", category:"spelling", sub:"Homophones", difficulty:3,
+    prompt:"Choose the correctly spelled word that fits: \"We ordered chocolate cake for ______.\"",
+    options:["desert","dessert","desertt","desssert"], correctIndex:1,
+    explanation:"\"Dessert\" (double s) is the sweet course; it has two s's because you always want seconds. \"Desert\" (one s) means a dry region or to abandon something." },
+
+  { id:"sp15", type:"spelling", category:"spelling", sub:"Homophones", difficulty:5,
+    prompt:"Choose the correctly spelled word that fits: \"The lawyer offered wise ______ to her client.\"",
+    options:["councel","council","counsel","counsil"], correctIndex:2,
+    explanation:"\"Counsel\" (with an s) means advice or to advise; a counselor gives counsel. \"Council\" (with a c) refers to a governing group." },
+
+  { id:"sp16", type:"spelling", category:"spelling", sub:"Homophones", difficulty:6,
+    prompt:"Choose the correctly spelled word that fits: \"Lawmakers gathered inside the state ______ to vote on the bill.\"",
+    options:["capitel","capital","capitle","capitol"], correctIndex:3,
+    explanation:"\"Capitol\" (with an o) names the building where a legislature meets, echoing its rounded dome. \"Capital\" refers to a capital city, money, or an uppercase letter." },
+
+  { id:"sp17", type:"spelling", category:"spelling", sub:"Homophones", difficulty:7,
+    prompt:"Choose the correctly spelled word that fits: \"The data were sorted into several ______ categories with no overlap.\"",
+    options:["discrete","discreet","descrete","discreate"], correctIndex:0,
+    explanation:"\"Discrete\" (its two e's kept apart by t) means individually distinct. \"Discreet\" means careful or tactful about what you reveal." },
+
+  { id:"sp18", type:"spelling", category:"spelling", sub:"Homophones", difficulty:7,
+    prompt:"Choose the correctly spelled word that fits: \"Police shut down the ______ gambling operation.\"",
+    options:["elicit","illicit","illecit","ilicit"], correctIndex:1,
+    explanation:"\"Illicit\" (starting il-) means illegal or forbidden. \"Elicit\" is the sound-alike verb meaning to draw out a response." },
+
+  { id:"sp19", type:"spelling", category:"spelling", sub:"Homophones", difficulty:2,
+    prompt:"Choose the correctly spelled word that fits: \"He tied the belt snugly around his ______.\"",
+    options:["waste","wast","waist","waest"], correctIndex:2,
+    explanation:"\"Waist\" refers to the middle of the body, spelled with ai. \"Waste\" is the sound-alike word meaning to use carelessly or discarded material." },
+
+  { id:"sp20", type:"spelling", category:"spelling", sub:"Homophones", difficulty:1,
+    prompt:"Choose the correctly spelled word that fits: \"She took a quick ______ inside the box before wrapping it.\"",
+    options:["peak","peeek","peik","peek"], correctIndex:3,
+    explanation:"\"Peek\" means a brief look, spelled with a double e. \"Peak\" is the sound-alike word for a mountain top or highest point." },
+
+  { id:"sp21", type:"spelling", category:"spelling", sub:"Silent Letters", difficulty:2,
+    prompt:"Choose the correctly spelled word that fits: \"A ceramic ______ stood guard in the garden.\"",
+    options:["gnome","nome","gnomme","gnoam"], correctIndex:0,
+    explanation:"\"Gnome\" begins with a silent g before the n. Dropping that silent letter gives the incorrect \"nome.\"" },
+
+  { id:"sp22", type:"spelling", category:"spelling", sub:"Silent Letters", difficulty:8,
+    prompt:"Choose the correctly spelled word that fits: \"The millionaire docked his ______ in the marina.\"",
+    options:["yaught","yacht","yott","yaht"], correctIndex:1,
+    explanation:"\"Yacht\" keeps a silent ch that isn't pronounced in the word at all. The irregular spelling is easy to guess wrong as \"yott\" or \"yaught.\"" },
+
+  { id:"sp23", type:"spelling", category:"spelling", sub:"Silent Letters", difficulty:5,
+    prompt:"Choose the correctly spelled word that fits: \"Keep your ______ in case you need to return the item.\"",
+    options:["reciept","receit","receipt","receipte"], correctIndex:2,
+    explanation:"\"Receipt\" has a silent p before the final t and follows \"i before e except after c.\" The common slip drops the silent p or misorders the ei." },
+
+  { id:"sp24", type:"spelling", category:"spelling", sub:"Silent Letters", difficulty:4,
+    prompt:"Choose the correctly spelled word that fits: \"Years of training built up the runner's leg ______.\"",
+    options:["mussle","muscel","musle","muscle"], correctIndex:3,
+    explanation:"\"Muscle\" contains a silent c between the s and the l. Writers often drop it, spelling the word \"mussle\" or \"musle.\"" },
+
+  { id:"sp25", type:"spelling", category:"spelling", sub:"Silent Letters", difficulty:3,
+    prompt:"Choose the correctly spelled word that fits: \"The leaves turn orange and red every ______.\"",
+    options:["autumn","autum","auttumn","autumm"], correctIndex:0,
+    explanation:"\"Autumn\" ends with a silent n after the m. The frequent error drops that final silent letter, writing \"autum.\"" },
+
+  { id:"sp26", type:"spelling", category:"spelling", sub:"Silent Letters", difficulty:5,
+    prompt:"Choose the correctly spelled word that fits: \"We grilled fresh ______ for dinner.\"",
+    options:["samon","salmon","sallmon","salmen"], correctIndex:1,
+    explanation:"\"Salmon\" has a silent l that isn't pronounced. Because the l makes no sound, people sometimes leave it out entirely, writing \"samon.\"" },
+
+  { id:"sp27", type:"spelling", category:"spelling", sub:"Silent Letters", difficulty:3,
+    prompt:"Choose the correctly spelled word that fits: \"We called a ______ to fix the leaking pipe.\"",
+    options:["plummer","plumer","plumber","plumbar"], correctIndex:2,
+    explanation:"\"Plumber\" has a silent b before the -er ending. A common mistake doubles the m instead, producing \"plummer.\"" },
+
+  { id:"sp28", type:"spelling", category:"spelling", sub:"Silent Letters", difficulty:5,
+    prompt:"Choose the correctly spelled word that fits: \"The senator launched her re-election ______ in the spring.\"",
+    options:["campain","campaing","campagn","campaign"], correctIndex:3,
+    explanation:"\"Campaign\" ends in a silent g before the final n. Writers often drop the silent g, writing \"campain.\"" },
+
+  { id:"sp29", type:"spelling", category:"spelling", sub:"Silent Letters", difficulty:1,
+    prompt:"Choose the correctly spelled word that fits: \"She paid off her student ______ last year.\"",
+    options:["debt","det","debbt","debte"], correctIndex:0,
+    explanation:"\"Debt\" contains a silent b left over from its Latin root. Leaving it out gives the incorrect \"det.\"" },
+
+  { id:"sp30", type:"spelling", category:"spelling", sub:"Silent Letters", difficulty:6,
+    prompt:"Choose the correctly spelled word that fits: \"The council voted to ______ the crumbling building.\"",
+    options:["condem","condemn","condemm","condemne"], correctIndex:1,
+    explanation:"\"Condemn\" ends with a silent n after the m. The common error drops that final silent letter, writing \"condem.\"" },
+
+  { id:"sp31", type:"spelling", category:"spelling", sub:"Prefixes & Suffixes", difficulty:1,
+    prompt:"Choose the correctly spelled word that fits: \"The car ______ suddenly at the red light.\"",
+    options:["stoped","stopt","stopped","stoppped"], correctIndex:2,
+    explanation:"\"Stop\" ends in a single vowel plus consonant, so the final p doubles before adding -ed. Leaving it single gives the incorrect \"stoped.\"" },
+
+  { id:"sp32", type:"spelling", category:"spelling", sub:"Prefixes & Suffixes", difficulty:3,
+    prompt:"Choose the correctly spelled word that fits: \"We are only at the ______ of this project.\"",
+    options:["begining","beggining","beginnning","beginning"], correctIndex:3,
+    explanation:"Because the stress falls on the last syllable of \"begin,\" the final n doubles before -ing. The frequent mistake uses only one n, writing \"begining.\"" },
+
+  { id:"sp33", type:"spelling", category:"spelling", sub:"Prefixes & Suffixes", difficulty:4,
+    prompt:"Choose the correctly spelled word that fits: \"They were ______ about which movie to watch.\"",
+    options:["arguing","argueing","arging","arguying"], correctIndex:0,
+    explanation:"The silent final e in \"argue\" drops before the vowel suffix -ing. The common mistake keeps the e, writing \"argueing.\"" },
+
+  { id:"sp34", type:"spelling", category:"spelling", sub:"Prefixes & Suffixes", difficulty:7,
+    prompt:"Choose the correctly spelled word that fits: \"There was a ______ improvement in her grades this semester.\"",
+    options:["noticable","noticeable","noticeble","noticiable"], correctIndex:1,
+    explanation:"\"Notice\" keeps its silent e before -able so the c stays soft, an exception to the usual drop-the-e rule. Dropping it, as in \"noticable,\" is the common error." },
+
+  { id:"sp35", type:"spelling", category:"spelling", sub:"Prefixes & Suffixes", difficulty:2,
+    prompt:"Choose the correctly spelled word that fits: \"Their wedding day was filled with ______.\"",
+    options:["happyness","happinness","happiness","hapiness"], correctIndex:2,
+    explanation:"The final y in \"happy\" changes to i before the suffix -ness. The common mistake keeps the y, writing \"happyness.\"" },
+
+  { id:"sp36", type:"spelling", category:"spelling", sub:"Prefixes & Suffixes", difficulty:2,
+    prompt:"Choose the correctly spelled word that fits: \"She ______ the groceries up three flights of stairs.\"",
+    options:["carryed","carried","carreid","carid"], correctIndex:1,
+    explanation:"The final y in \"carry\" changes to i before adding -ed. The common mistake keeps the y, writing \"carryed.\"" },
+
+  { id:"sp37", type:"spelling", category:"spelling", sub:"Prefixes & Suffixes", difficulty:9,
+    prompt:"Choose the correctly spelled word that fits: \"Leaving the stove on was a truly ______ thing to do.\"",
+    options:["irresponsible","iresponsible","irresponsable","irrisponsible"], correctIndex:0,
+    explanation:"The prefix in- assimilates to ir- before a root starting with r, giving a doubled r: ir + responsible. Using only one r, as in \"iresponsible,\" is the frequent error." },
+
+  { id:"sp38", type:"spelling", category:"spelling", sub:"Prefixes & Suffixes", difficulty:8,
+    prompt:"Choose the correctly spelled word that fits: \"His ______ spending left him deep in debt.\"",
+    options:["imoderate","immoderate","immodderate","immoderrate"], correctIndex:1,
+    explanation:"The prefix in- assimilates to im- before a root starting with m, giving a doubled m: im + moderate. Writing a single m, as in \"imoderate,\" is the common mistake." },
+
+  { id:"sp39", type:"spelling", category:"spelling", sub:"Prefixes & Suffixes", difficulty:6,
+    prompt:"Choose the correctly spelled word that fits: \"Autocorrect won't catch it if you accidentally ______ a word.\"",
+    options:["mispell","misspel","misspell","misspeel"], correctIndex:2,
+    explanation:"The prefix mis- simply attaches to \"spell,\" and both s's are kept: mis + spell. Dropping one s, as in \"mispell,\" is the frequent error." },
+
+  { id:"sp40", type:"spelling", category:"spelling", sub:"Prefixes & Suffixes", difficulty:9,
+    prompt:"Choose the correctly spelled word that fits: \"Buying a third printer seemed completely ______.\"",
+    options:["unecessary","unnecessery","unneccessary","unnecessary"], correctIndex:3,
+    explanation:"The prefix un- simply attaches to \"necessary,\" so both n's are kept: un + necessary. Dropping one n, as in \"unecessary,\" is the common mistake." },
+
+  { id:"sp41", type:"spelling", category:"spelling", sub:"Double Letters & Irregular Spellings", difficulty:9,
+    prompt:"Choose the correctly spelled word that fits: \"The company celebrated the turn of the new ______ with a huge party.\"",
+    options:["millennium","millenium","millenniumm","milennium"], correctIndex:0,
+    explanation:"\"Millennium\" doubles both the l and the n, from mille (thousand) plus annus (year). The very common error drops one of the doubled letters, writing \"millenium.\"" },
+
+  { id:"sp42", type:"spelling", category:"spelling", sub:"Double Letters & Irregular Spellings", difficulty:5,
+    prompt:"Choose the correctly spelled word that fits: \"Her graduation was a special ______ for the whole family.\"",
+    options:["ocasion","occasion","occassion","occaision"], correctIndex:1,
+    explanation:"\"Occasion\" doubles the c but has only a single s. A common mistake doubles the s instead, writing \"occassion.\"" },
+
+  { id:"sp43", type:"spelling", category:"spelling", sub:"Double Letters & Irregular Spellings", difficulty:7,
+    prompt:"Choose the correctly spelled word that fits: \"The stolen jewelry was found in his ______.\"",
+    options:["posession","possesion","possession","posesion"], correctIndex:2,
+    explanation:"\"Possession\" doubles both pairs of s: poss + ess + ion. Dropping one of the double s's, as in \"posession,\" is the frequent error." },
+
+  { id:"sp44", type:"spelling", category:"spelling", sub:"Double Letters & Irregular Spellings", difficulty:8,
+    prompt:"Choose the correctly spelled word that fits: \"Steamed ______ was served alongside the chicken.\"",
+    options:["brocolli","broccolli","brocoli","broccoli"], correctIndex:3,
+    explanation:"\"Broccoli\" doubles the c but has only a single l, an irregular pattern inherited from Italian. The common mistake doubles the l instead, writing \"broccolli.\"" },
+
+  { id:"sp45", type:"spelling", category:"spelling", sub:"Double Letters & Irregular Spellings", difficulty:10,
+    prompt:"Choose the correctly spelled word that fits: \"The two train tracks run ______ to each other for miles.\"",
+    options:["parallel","parallell","parrallel","paralel"], correctIndex:0,
+    explanation:"\"Parallel\" follows a tricky irregular pattern: a single r, then a doubled l, then a single l again at the end. Writers often add an extra r or an extra final l, as in \"parrallel\" or \"parallell.\"" },
+
+  { id:"sp46", type:"spelling", category:"spelling", sub:"Double Letters & Irregular Spellings", difficulty:8,
+    prompt:"Choose the correctly spelled word that fits: \"He ran the ______ over the living room carpet.\"",
+    options:["vaccum","vacuum","vaccuum","vacume"], correctIndex:1,
+    explanation:"\"Vacuum\" has an irregular double u but only a single c. The common mistake doubles the c instead, writing \"vaccum.\"" },
+
+  { id:"sp47", type:"spelling", category:"spelling", sub:"Double Letters & Irregular Spellings", difficulty:3,
+    prompt:"Choose the correctly spelled word that fits: \"They bought a new ______ for the guest bedroom.\"",
+    options:["matress","matres","mattress","mattres"], correctIndex:2,
+    explanation:"\"Mattress\" doubles both the t and the s. The frequent mistake drops one of these doubled letters, writing \"matress.\"" },
+
+  { id:"sp48", type:"spelling", category:"spelling", sub:"Double Letters & Irregular Spellings", difficulty:10,
+    prompt:"Choose the correctly spelled word that fits: \"The tourists witnessed a truly ______ ritual during the festival.\"",
+    options:["bizzare","bizare","bizzarre","bizarre"], correctIndex:3,
+    explanation:"\"Bizarre\" doubles the final r but has only a single z, an irregular French-derived spelling. The common mistake doubles the z instead, writing \"bizzare.\"" },
+
+  { id:"sp49", type:"spelling", category:"spelling", sub:"Double Letters & Irregular Spellings", difficulty:6,
+    prompt:"Choose the correctly spelled word that fits: \"The ______ will vote on the new policy next week.\"",
+    options:["committee","comittee","committe","commitee"], correctIndex:0,
+    explanation:"\"Committee\" doubles three letters in a row: the m, the t, and the e. The common mistake drops one of these doubled pairs, writing \"comittee\" or \"committe.\"" },
+
+  { id:"sp50", type:"spelling", category:"spelling", sub:"Double Letters & Irregular Spellings", difficulty:4,
+    prompt:"Choose the correctly spelled word that fits: \"The meeting has been rescheduled for ______ morning.\"",
+    options:["tommorow","tomorrow","tommorrow","tomorow"], correctIndex:1,
+    explanation:"\"Tomorrow\" doubles the r but has only a single m, an irregular pattern from \"to + morrow.\" The common mistake doubles the m instead, writing \"tommorow.\"" },
 ];
 
 /* =================== GRAMMAR & PUNCTUATION LESSON BANK =================== */
