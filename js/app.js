@@ -73,7 +73,7 @@
   let dismissedStandaloneNotice = load("dismissedStandaloneNotice", false);
 
   if(placementProgress && (
-    !placementProgress.sequence || !placementProgress.categoryDifficulty ||
+    !placementProgress.sequence || !placementProgress.categoryDifficulty || !placementProgress.categoryDisplayDifficulty ||
     placementProgress.order.some(function(id){ return id && !PLACEMENT_BY_ID[id]; })
   )){
     placementProgress = null;
@@ -97,14 +97,21 @@
   function goHome(){ navigate("home"); }
 
   /* ---------------- placement test ---------------- */
-  // Adaptive: each category tracks its own difficulty (1-10, starting at 5)
-  // independently. A correct answer raises that category's difficulty by
-  // exactly 1 for its next question (capped at 10); an incorrect answer
-  // lowers it by exactly 1 (floored at 1). This is measurement-only — no
-  // correct/incorrect feedback is ever shown during the test, so the
-  // adjustment happens silently in the background.
+  // Adaptive: each category tracks its own difficulty independently (1-10,
+  // starting at 5), split into two parallel values:
+  //   - categoryDifficulty: the REAL target used to pick the next question's
+  //     content. Moves by PLACEMENT_ACTUAL_STEP per answer, so the actual
+  //     challenge ramps up/down faster than the visible indicator suggests.
+  //   - categoryDisplayDifficulty: what the on-screen "Difficulty N/10" pill
+  //     shows. Always moves by exactly 1 per answer — a simple, readable
+  //     progress cue, not a precise reflection of the real target.
+  // Both are clamped to 1-10. This is measurement-only — no correct/
+  // incorrect feedback is ever shown during the test, so both adjustments
+  // happen silently in the background.
   const PLACEMENT_DRAW_COUNTS = { error:12, blank:10, vocab:8, spelling:10 }; // 40 total
   const PLACEMENT_START_DIFFICULTY = 5;
+  const PLACEMENT_ACTUAL_STEP = 2;
+  const PLACEMENT_DISPLAY_STEP = 1;
 
   function buildPlacementSequence(){
     const seq = [];
@@ -136,7 +143,11 @@
   function startPlacement(){
     const sequence = buildPlacementSequence();
     const categoryDifficulty = {};
-    Object.keys(PLACEMENT_DRAW_COUNTS).forEach(function(cat){ categoryDifficulty[cat] = PLACEMENT_START_DIFFICULTY; });
+    const categoryDisplayDifficulty = {};
+    Object.keys(PLACEMENT_DRAW_COUNTS).forEach(function(cat){
+      categoryDifficulty[cat] = PLACEMENT_START_DIFFICULTY;
+      categoryDisplayDifficulty[cat] = PLACEMENT_START_DIFFICULTY;
+    });
     const order = new Array(sequence.length).fill(null);
     const first = pickAdaptiveQuestion(sequence[0], categoryDifficulty[sequence[0]], {});
     order[0] = first.id;
@@ -144,6 +155,7 @@
       sequence: sequence,
       order: order,
       categoryDifficulty: categoryDifficulty,
+      categoryDisplayDifficulty: categoryDisplayDifficulty,
       answers: new Array(sequence.length).fill(null),
       currentIndex: 0,
       startedAt: Date.now()
@@ -173,7 +185,9 @@
         const answeredQ = PLACEMENT_BY_ID[placementProgress.order[idx]];
         const wasCorrect = placementProgress.answers[idx] === answeredQ.correctIndex;
         const cat = answeredQ.category;
-        placementProgress.categoryDifficulty[cat] = clamp(placementProgress.categoryDifficulty[cat] + (wasCorrect ? 1 : -1), 1, 10);
+        const dir = wasCorrect ? 1 : -1;
+        placementProgress.categoryDifficulty[cat] = clamp(placementProgress.categoryDifficulty[cat] + dir * PLACEMENT_ACTUAL_STEP, 1, 10);
+        placementProgress.categoryDisplayDifficulty[cat] = clamp(placementProgress.categoryDisplayDifficulty[cat] + dir * PLACEMENT_DISPLAY_STEP, 1, 10);
 
         const usedIds = {};
         placementProgress.order.forEach(function(id){ if(id) usedIds[id] = true; });
@@ -569,7 +583,7 @@
         '<div class="card stack">' +
           '<div class="row-between" style="flex-wrap:wrap; row-gap:8px;">' +
             '<span class="pill pill-amethyst" style="white-space:nowrap;">' + esc(CATEGORY_NAMES[q.category]) + "</span>" +
-            '<span class="pill pill-beige" style="white-space:nowrap;">Difficulty ' + questionDifficulty(q) + '/10</span>' +
+            '<span class="pill pill-beige" style="white-space:nowrap;">Difficulty ' + placementProgress.categoryDisplayDifficulty[q.category] + '/10</span>' +
           "</div>" +
           passageHTML(q) +
           '<div class="prompt-box">' + renderPrompt(q.prompt) + "</div>" +
