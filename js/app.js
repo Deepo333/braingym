@@ -105,13 +105,17 @@
   // than a single flip does, and resets to 1 whenever the direction flips.
   // This is measurement-only — no correct/incorrect feedback is ever shown
   // during the test, so the adjustment happens silently in the background.
-  const PLACEMENT_DRAW_COUNTS = { error:12, blank:10, vocab:8, reading:10 }; // 40 total
+  const PLACEMENT_DRAW_COUNTS = { error:12, blank:10, vocab:8, spelling:10 }; // 40 total
   const PLACEMENT_START_DIFFICULTY = 5;
   const PLACEMENT_MAX_STEP = 4;
 
   function buildPlacementSequence(){
     const seq = [];
     Object.keys(PLACEMENT_DRAW_COUNTS).forEach(function(cat){
+      // Defensive: skip a category with no pool items yet rather than crash
+      // (also self-heals if a category's pool is ever fully exhausted).
+      const available = PLACEMENT_POOL.some(function(q){ return q.category === cat; });
+      if(!available) return;
       for(let i = 0; i < PLACEMENT_DRAW_COUNTS[cat]; i++) seq.push(cat);
     });
     return shuffle(seq);

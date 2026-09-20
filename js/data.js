@@ -24,8 +24,11 @@ const CATEGORY_NAMES = {
   error: "Grammar & Sentence Errors",
   blank: "Word Choice",
   vocab: "Vocabulary",
-  reading: "Reading Comprehension"
+  spelling: "Spelling"
 };
+// Reading Comprehension is temporarily excluded from the active placement
+// categories above (may be added back later) — its 50 pool questions stay
+// in PLACEMENT_POOL below, just unused, so nothing is lost.
 
 /* =================== PLACEMENT TEST POOL =================== */
 const PLACEMENT_POOL = [
