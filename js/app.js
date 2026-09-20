@@ -775,8 +775,28 @@
     // app opens the same way every time.
     navigate("home");
     if("serviceWorker" in navigator){
+      const sw = navigator.serviceWorker;
+      // Only a *change* of controller (not the first-ever install claiming
+      // an uncontrolled page) means a newer deployed version just took
+      // over — reload once so the page picks it up instead of continuing
+      // to run stale in-memory code.
+      const hadController = !!sw.controller;
+      let reloadedForUpdate = false;
+      sw.addEventListener("controllerchange", function(){
+        if(!hadController || reloadedForUpdate) return;
+        reloadedForUpdate = true;
+        window.location.reload();
+      });
       window.addEventListener("load", function(){
-        navigator.serviceWorker.register("sw.js").catch(function(){ /* offline caching is optional */ });
+        sw.register("sw.js").then(function(reg){
+          // Re-check for a newer version whenever the app is opened or
+          // resumed — covers reopening the iOS home-screen icon, which
+          // resumes from a frozen state rather than a fresh navigation
+          // and can otherwise miss the browser's normal update check.
+          document.addEventListener("visibilitychange", function(){
+            if(document.visibilityState === "visible") reg.update().catch(function(){});
+          });
+        }).catch(function(){ /* offline caching is optional */ });
       });
     }
   }

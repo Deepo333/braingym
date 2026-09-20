@@ -1,5 +1,8 @@
-/* Bloom — minimal offline app-shell cache */
-const CACHE_NAME = "bloom-shell-v1";
+/* Bloom — app-shell cache with network-first updates
+   Same-origin requests always try the network first (bypassing the HTTP
+   cache) so a freshly deployed version is picked up immediately whenever
+   the device is online; the cache is only a fallback for offline use. */
+const CACHE_NAME = "bloom-shell-v2";
 const SHELL_FILES = [
   "./",
   "./index.html",
@@ -31,6 +34,23 @@ self.addEventListener("activate", function(event){
 
 self.addEventListener("fetch", function(event){
   if(event.request.method !== "GET") return;
+  const sameOrigin = new URL(event.request.url).origin === self.location.origin;
+
+  if(sameOrigin){
+    event.respondWith(
+      fetch(event.request, { cache: "no-store" }).then(function(response){
+        if(response && response.status === 200){
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(function(cache){ cache.put(event.request, copy); });
+        }
+        return response;
+      }).catch(function(){ return caches.match(event.request); })
+    );
+    return;
+  }
+
+  // Cross-origin (e.g. Google Fonts): cache-first with background refresh —
+  // this content rarely changes and isn't part of the app's own deploys.
   event.respondWith(
     caches.match(event.request).then(function(cached){
       const network = fetch(event.request).then(function(response){
