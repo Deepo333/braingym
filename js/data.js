@@ -26,6 +26,51 @@ const CATEGORY_NAMES = {
   vocab: "Vocabulary",
   spelling: "Spelling"
 };
+
+/* Bands for the 1-10 per-category ceiling produced by the scoring engine.
+   Named distinctly from LEVEL_NAMES above so the two scales can never be
+   mistaken for each other on screen. */
+const CEILING_BANDS = [
+  { max: 2,  name: "Emerging" },
+  { max: 4,  name: "Building" },
+  { max: 6,  name: "Solid" },
+  { max: 8,  name: "Strong" },
+  { max: 10, name: "Exceptional" }
+];
+
+/* One short, specific reading per category per band (index matches
+   CEILING_BANDS) — what that ceiling actually means for this skill,
+   and what sits at the edge of it. */
+const CATEGORY_INSIGHTS = {
+  error: [
+    "You're anchoring the essentials — subject-verb agreement and complete sentences. Fragments and run-ons are the fastest wins from here.",
+    "Everyday sentences come out clean, but longer ones with interrupting phrases still pull agreement and pronoun reference off track.",
+    "Standard punctuation and agreement are dependable. Modifier placement and parallel structure in longer sentences are your live edge.",
+    "You hold up through most complex constructions — what's left is the fine print: dangling modifiers, tricky parallelism, and semicolon-level punctuation.",
+    "You're reading at editorial level, keeping agreement and structure intact through sentences built specifically to trip you up."
+  ],
+  blank: [
+    "Common mix-ups — their/there, affect/effect — are the foundation worth locking in before nuance.",
+    "You pick correctly when the options are clearly different; near-synonyms carrying different connotations still slip past.",
+    "Your everyday diction is sound. Connotation and idiom — words that are technically close but land wrong — are the next layer.",
+    "You're choosing precisely in most contexts, register included. The remaining misses are fine shades of connotation.",
+    "You're separating near-identical words on connotation and idiom alone, which is a genuinely strong editorial ear."
+  ],
+  vocab: [
+    "Everyday working vocabulary is your base — reading more widely is the fastest lever you have here.",
+    "Common words are secure and you can often infer from context; less frequent academic vocabulary is still hit or miss.",
+    "Solid mid-range vocabulary. Words you half-recognize — where a root or prefix would settle it — are the growth zone.",
+    "You handle uncommon academic vocabulary confidently and read context well; rare and literary words are what remain.",
+    "Your range reaches rare and specialized vocabulary, including fine distinctions between very close synonyms."
+  ],
+  spelling: [
+    "High-frequency words and homophone pairs are the place to build from.",
+    "Common words are mostly secure; doubled letters and homophones are where your errors cluster.",
+    "You spell everyday and moderately tricky words well. Silent letters and irregular endings are the live edge.",
+    "You're accurate on words most people miss; what's left is genuinely irregular, low-frequency spelling.",
+    "You're spelling rare, irregular, and technical words accurately — unusually strong."
+  ]
+};
 // Reading Comprehension is temporarily excluded from the active placement
 // categories above (may be added back later) — its 50 pool questions stay
 // in PLACEMENT_POOL below, just unused, so nothing is lost.

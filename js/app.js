@@ -746,6 +746,98 @@
       "</main>";
   }
 
+  // Loose expectation baselines, used only to give the ceiling numbers some
+  // context on screen. Deliberately coarse, and labelled as an estimate
+  // where it's shown — there is no validated norming data behind this.
+  const EDUCATION_BASELINE = {
+    "High school diploma or GED": 5,
+    "Some college": 5.5,
+    "Associate degree": 6,
+    "Bachelor's degree": 6.5,
+    "Master's degree": 7,
+    "Doctoral degree": 7.5
+  };
+  function ceilingBand(n){
+    for(let i = 0; i < CEILING_BANDS.length; i++){ if(n <= CEILING_BANDS[i].max) return i; }
+    return CEILING_BANDS.length - 1;
+  }
+  function levelMeterHTML(ceiling){
+    let out = '<div class="level-meter" role="img" aria-label="Level ' + ceiling + ' of 10">';
+    for(let i = 1; i <= 10; i++) out += "<span" + (i <= ceiling ? ' class="on"' : "") + "></span>";
+    return out + "</div>";
+  }
+  function subSkillChipsHTML(subSkills){
+    const names = Object.keys(subSkills).sort(function(a, b){
+      const byPct = subSkills[b].pct - subSkills[a].pct;
+      return byPct !== 0 ? byPct : subSkills[b].total - subSkills[a].total;
+    });
+    return '<div class="chip-row">' + names.map(function(n){
+      const s = subSkills[n];
+      const cls = s.pct >= 67 ? "chip-good" : s.pct >= 34 ? "chip-mid" : "chip-low";
+      return '<span class="chip ' + cls + '">' + esc(n) + " <b>" + s.correct + "/" + s.total + "</b></span>";
+    }).join("") + "</div>";
+  }
+  function benchmarkHTML(avgCeiling){
+    if(!profile) return "";
+    const base = EDUCATION_BASELINE[profile.education];
+    if(typeof base !== "number") return "";
+    const ageAdj = profile.age < 18 ? -1 : profile.age < 25 ? -0.5 : profile.age < 40 ? 0 : 0.5;
+    const lo = clamp(Math.round(base + ageAdj - 1), 1, 10);
+    const hi = clamp(Math.round(base + ageAdj + 1), 1, 10);
+    const where = avgCeiling > hi ? "sits above that range"
+      : avgCeiling < lo ? "sits below that range"
+      : "sits inside that range";
+    return '<div class="card-soft stack-sm">' +
+        '<span class="eyebrow">Rough context</span>' +
+        '<p class="sub">Age ' + esc(profile.age) + " · " + esc(profile.education) + " — a loose expectation would land around levels " +
+          lo + "–" + hi + ". Your average ceiling of " + avgCeiling + " " + where + ".</p>" +
+        '<p class="sub" style="font-size:.8rem;">A rough sketch drawn from two data points, not a validated benchmark — context, not a verdict.</p>' +
+      "</div>";
+  }
+  function categoryCardHTML(key, c){
+    const band = ceilingBand(c.ceiling);
+    const insights = CATEGORY_INSIGHTS[key];
+    const insight = insights ? insights[band] : "";
+    return '<div class="card stack-sm">' +
+        '<div class="row-between" style="flex-wrap:wrap; row-gap:6px;">' +
+          '<span style="font-weight:800;">' + esc(c.name) + "</span>" +
+          '<span class="pill pill-amethyst" style="white-space:nowrap;">Level ' + c.ceiling + " · " + esc(CEILING_BANDS[band].name) + "</span>" +
+        "</div>" +
+        levelMeterHTML(c.ceiling) +
+        (insight ? '<p class="sub">' + esc(insight) + "</p>" : "") +
+        subSkillChipsHTML(c.subSkills) +
+      "</div>";
+  }
+  function detailedResultHTML(r){
+    const keys = Object.keys(r.categoryScores).sort(function(a, b){
+      return r.categoryScores[b].ceiling - r.categoryScores[a].ceiling;
+    });
+    const cats = keys.map(function(k){ return r.categoryScores[k]; });
+    const avgCeiling = Math.round((cats.reduce(function(s, c){ return s + c.ceiling; }, 0) / cats.length) * 10) / 10;
+    const top = cats[0];
+    const bottom = cats[cats.length - 1];
+    return '<div class="card stack-sm">' +
+        '<h3 class="title-md">Your snapshot</h3>' +
+        '<p class="sub">Each category is scored 1–10 by the hardest level you were still answering correctly at the end of the test — your ceiling, not your percentage.</p>' +
+        '<p class="sub">Strongest: <strong style="color:var(--ink)">' + esc(top.name) + "</strong> (level " + top.ceiling + ")" +
+          (cats.length > 1 ? ' · Focus next on <strong style="color:var(--ink)">' + esc(bottom.name) + "</strong> (level " + bottom.ceiling + ")" : "") + "</p>" +
+      "</div>" +
+      benchmarkHTML(avgCeiling) +
+      keys.map(function(k){ return categoryCardHTML(k, r.categoryScores[k]); }).join("") +
+      '<p class="sub" style="font-size:.8rem;">Sub-skill counts come from a light sample across 40 questions — a 1/1 or 0/1 is a hint, not a verdict.</p>';
+  }
+  // Results saved before the scoring engine existed have no categoryScores,
+  // so they keep the original percentage breakdown until the test is retaken.
+  function legacyResultHTML(r){
+    return '<div class="card stack">' +
+        '<h3 class="title-md">Strengths &amp; growth areas</h3>' +
+        "<div>" + r.breakdown.map(function(b){
+          return '<div class="bar-row"><div class="bar-row-top"><span>' + esc(b.name) + "</span><span>" + b.pct + "%</span></div>" +
+            '<div class="bar-track"><div class="bar-fill ' + pctColorClass(b.pct) + '" style="width:' + b.pct + '%"></div></div></div>';
+        }).join("") + "</div>" +
+        '<p class="sub">Retake the test to see your level-by-level breakdown.</p>' +
+      "</div>";
+  }
   function renderPlacementResult(){
     const r = placementResult;
     const pct = Math.round((r.level / 5) * 100);
@@ -759,16 +851,8 @@
           '<h1 class="title-lg">' + esc(r.levelName) + "</h1>" +
           '<p class="sub" style="color:rgba(255,255,255,.92); margin-top:6px;">' + esc(LEVEL_BLURB[r.level]) + "</p>" +
           '<p style="margin-top:14px; font-weight:800; color:#fff;">' + r.correct + " / " + r.total + " correct (" + r.scorePercent + "%)</p>" +
-          (profile ? '<p class="sub" style="color:rgba(255,255,255,.8); margin-top:8px; font-size:.82rem;">Age ' + esc(profile.age) + " · " + esc(profile.education) + "</p>" : "") +
         "</div>" +
-        '<div class="card stack">' +
-          '<h3 class="title-md">Strengths &amp; growth areas</h3>' +
-          '<div>' + r.breakdown.map(function(b){
-            return '<div class="bar-row"><div class="bar-row-top"><span>' + esc(b.name) + "</span><span>" + b.pct + "%</span></div>" +
-              '<div class="bar-track"><div class="bar-fill ' + pctColorClass(b.pct) + '" style="width:' + b.pct + '%"></div></div></div>';
-          }).join("") + "</div>" +
-          '<p class="sub">Strongest: <strong style="color:var(--ink)">' + esc(r.breakdown[0].name) + "</strong> · Focus next on <strong style=\"color:var(--ink)\">" + esc(r.breakdown[r.breakdown.length-1].name) + "</strong></p>" +
-        "</div>" +
+        (r.categoryScores ? detailedResultHTML(r) : legacyResultHTML(r)) +
         '<div class="btn-row">' +
           '<button class="btn btn-outline" data-action="retake-placement">Retake test</button>' +
           '<button class="btn btn-primary" data-action="go-home">Back to home</button>' +
