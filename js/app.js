@@ -403,13 +403,23 @@
   /* ---- per-sub-skill adaptivity (independent of the placement engine) ----
      Every (category, sub-skill) pair carries its own difficulty estimate on
      the same 1-10 scale the pool is rated on. After each answer the estimate
-     moves by an asymmetric step that settles where the learner is getting
-     roughly SKILL_TARGET_ACCURACY right: a hit nudges up by (1 - target), a
-     miss drops by target, so at equilibrium the ups and downs cancel at an
-     85% success rate rather than the 50% a symmetric step would converge on. */
+     moves by a step that settles where the learner is getting roughly
+     SKILL_TARGET_ACCURACY right: a hit nudges up by (1 - target), a miss
+     drops by target, so at equilibrium the ups and downs cancel at an 85%
+     success rate rather than the 50% a symmetric step would converge on.
+
+     That up:down ratio is not a free choice — it IS the target. Equilibrium
+     sits at down / (up + down), so evening the two out would retune the
+     system to 50%. At 85% accuracy misses simply arrive ~5.7x less often
+     than hits, so each has to carry ~5.7x the weight or the level would
+     climb forever. What is free is the overall magnitude: SKILL_STEP_SCALE
+     shrinks both steps together, keeping the target exact while cutting how
+     much ground a bad streak gives away, so a short run of misses no longer
+     tanks a level for many lessons afterward. */
   const SKILL_TARGET_ACCURACY = 0.85;
-  const SKILL_UP_STEP = 1 - SKILL_TARGET_ACCURACY;
-  const SKILL_DOWN_STEP = SKILL_TARGET_ACCURACY;
+  const SKILL_STEP_SCALE = 0.4;
+  const SKILL_UP_STEP = SKILL_STEP_SCALE * (1 - SKILL_TARGET_ACCURACY);
+  const SKILL_DOWN_STEP = SKILL_STEP_SCALE * SKILL_TARGET_ACCURACY;
   const SKILL_CONFIDENCE_HALFLIFE_DAYS = 30;
   // Spaced repetition, indexed by consecutive correct answers on that
   // sub-skill. A miss resets to 0, i.e. due immediately, so missed
