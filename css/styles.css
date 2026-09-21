@@ -513,6 +513,36 @@ button{ font-family:inherit; }
 .bar-fill.mid{ background: linear-gradient(90deg, var(--beige-deep), var(--rose-deep)); }
 .bar-fill.low{ background: linear-gradient(90deg, var(--rose), var(--danger)); }
 
+/* ---------- level meter (1-10 ceiling) ---------- */
+.level-meter{ display:flex; gap:3px; }
+.level-meter span{
+  flex:1;
+  height:7px;
+  border-radius:999px;
+  background: var(--lilac-pale);
+}
+.level-meter span.on{ background: linear-gradient(90deg, var(--amethyst), var(--amethyst-deep)); }
+
+/* ---------- sub-skill chips ---------- */
+.chip-row{ display:flex; flex-wrap:wrap; gap:6px; }
+.chip{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:5px 10px;
+  border-radius:999px;
+  font-size:.74rem;
+  font-weight:700;
+  line-height:1.3;
+  background: var(--surface-soft);
+  color: var(--ink-soft);
+  border:1px solid var(--border);
+}
+.chip b{ font-weight:800; font-variant-numeric: tabular-nums; }
+.chip-good{ background: var(--lime-pale); color: var(--lime-deep); border-color:transparent; }
+.chip-mid{ background: var(--beige-pale); color: var(--beige-deep); border-color:transparent; }
+.chip-low{ background: var(--rose-pale); color: var(--rose-deep); border-color:transparent; }
+
 /* ---------- select / dropdown ---------- */
 .field{ display:flex; flex-direction:column; gap:8px; }
 .field label{ font-size:.85rem; font-weight:800; color: var(--ink-soft); }
