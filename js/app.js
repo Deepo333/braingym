@@ -108,6 +108,7 @@
   let view = "home";
   let viewParams = {};
   let selectedDuration = 10;
+  let selectedFocus = "";   // "" = mixed lesson; otherwise a "category::sub-skill" key
   let showSettings = false;
 
   function navigate(v, params){
@@ -463,19 +464,60 @@
   }
   // Starting difficulty comes from the placement test: the category ceiling,
   // nudged by how that specific sub-skill went where placement measured it.
+  function placementReading(cat, sub){
+    const cs = placementResult && placementResult.categoryScores && placementResult.categoryScores[cat];
+    return (cs && cs.subSkills && cs.subSkills[sub]) || null;
+  }
+  function seedSkillLevel(cat, sub){
+    const measured = placementReading(cat, sub);
+    const adj = !measured ? 0 : measured.pct >= 80 ? 1 : measured.pct >= 50 ? 0 : measured.pct >= 25 ? -1 : -2;
+    return clamp(categorySeedLevel(cat) + adj, 1, 10);
+  }
   function getSkill(cat, sub){
     const key = skillKey(cat, sub);
     if(!skillState[key]){
-      const cs = placementResult && placementResult.categoryScores && placementResult.categoryScores[cat];
-      const measured = cs && cs.subSkills && cs.subSkills[sub];
-      const adj = !measured ? 0 : measured.pct >= 80 ? 1 : measured.pct >= 50 ? 0 : measured.pct >= 25 ? -1 : -2;
       skillState[key] = {
-        level: clamp(categorySeedLevel(cat) + adj, 1, 10),
-        priorN: measured ? PLACEMENT_PRIOR_N : 0,
+        level: seedSkillLevel(cat, sub),
+        priorN: placementReading(cat, sub) ? PLACEMENT_PRIOR_N : 0,
         seen:0, correct:0, reps:0, missStreak:0, lastSeenAt:0, dueAt:0
       };
     }
     return skillState[key];
+  }
+  // Read-only view of a level, for listing sub-skills without creating
+  // records as a side effect of rendering.
+  function peekSkillLevel(cat, sub){
+    const s = skillState[skillKey(cat, sub)];
+    return s ? s.level : seedSkillLevel(cat, sub);
+  }
+  // Every sub-skill the pool can draw from, with the learner's current level
+  // and how many questions back it — the menu for a focused lesson.
+  function lessonSkills(){
+    const byKey = {};
+    LESSON_POOL.forEach(function(q){
+      const key = skillKey(q.category, q.sub);
+      if(!byKey[key]) byKey[key] = { key:key, cat:q.category, sub:q.sub, count:0 };
+      byKey[key].count++;
+    });
+    const order = Object.keys(CATEGORY_NAMES);
+    return Object.keys(byKey).map(function(k){
+      byKey[k].level = peekSkillLevel(byKey[k].cat, byKey[k].sub);
+      return byKey[k];
+    }).sort(function(a, b){
+      return a.cat === b.cat ? a.sub.localeCompare(b.sub) : order.indexOf(a.cat) - order.indexOf(b.cat);
+    });
+  }
+  function parseFocus(key){
+    if(!key) return null;
+    const i = key.indexOf("::");
+    if(i < 0) return null;
+    const cat = key.slice(0, i), sub = key.slice(i + 2);
+    // A focus stored on an old lesson record may name a sub-skill the pool
+    // no longer has; fall back to a mixed lesson rather than drawing nothing.
+    return LESSON_POOL.some(function(q){ return q.category === cat && q.sub === sub; }) ? { cat:cat, sub:sub } : null;
+  }
+  function focusQuestionCount(focus){
+    return LESSON_POOL.filter(function(q){ return q.category === focus.cat && q.sub === focus.sub; }).length;
   }
   // What difficulty to actually serve: the sub-skill's own estimate and its
   // category's, weighted by the sub-skill's accumulated evidence.
@@ -511,29 +553,43 @@
     const tier = candidates.filter(function(q){ return Math.abs(q.difficulty - target) === best; });
     return tier[Math.floor(Math.random() * tier.length)];
   }
-  function drawQuestions(count){
-    const seen = {};
-    const skills = [];
-    LESSON_POOL.forEach(function(q){
-      const key = skillKey(q.category, q.sub);
-      if(seen[key]) return;
-      seen[key] = true;
-      skills.push({ cat:q.category, sub:q.sub });
-    });
-    const ranked = skills.map(function(s){
-      return { cat:s.cat, sub:s.sub, score: skillPriority(getSkill(s.cat, s.sub)) };
-    }).sort(function(a, b){ return b.score - a.score; });
-
+  function drawQuestions(count, focus){
     const usedIds = {};
     const picked = [];
-    // Walk the priority order, wrapping for lessons longer than the
-    // sub-skill list; a sub-skill whose questions are used up is skipped.
-    for(let i = 0; picked.length < count && i < ranked.length * 6; i++){
-      const s = ranked[i % ranked.length];
-      const q = nearestLessonQuestion(s.cat, s.sub, servedLevel(s.cat, s.sub), usedIds);
-      if(!q) continue;
-      usedIds[q.id] = true;
-      picked.push(q);
+    if(focus){
+      // Focused lesson: every question from the one sub-skill, drawn at the
+      // same adaptive level a mixed lesson would have served it at. Capped by
+      // how many questions that sub-skill has rather than repeating one
+      // inside a single lesson.
+      const target = servedLevel(focus.cat, focus.sub);
+      while(picked.length < count){
+        const q = nearestLessonQuestion(focus.cat, focus.sub, target, usedIds);
+        if(!q) break;
+        usedIds[q.id] = true;
+        picked.push(q);
+      }
+    } else {
+      const seen = {};
+      const skills = [];
+      LESSON_POOL.forEach(function(q){
+        const key = skillKey(q.category, q.sub);
+        if(seen[key]) return;
+        seen[key] = true;
+        skills.push({ cat:q.category, sub:q.sub });
+      });
+      const ranked = skills.map(function(s){
+        return { cat:s.cat, sub:s.sub, score: skillPriority(getSkill(s.cat, s.sub)) };
+      }).sort(function(a, b){ return b.score - a.score; });
+
+      // Walk the priority order, wrapping for lessons longer than the
+      // sub-skill list; a sub-skill whose questions are used up is skipped.
+      for(let i = 0; picked.length < count && i < ranked.length * 6; i++){
+        const s = ranked[i % ranked.length];
+        const q = nearestLessonQuestion(s.cat, s.sub, servedLevel(s.cat, s.sub), usedIds);
+        if(!q) continue;
+        usedIds[q.id] = true;
+        picked.push(q);
+      }
     }
     save("skillState", skillState);
     save("categoryState", categoryState);
@@ -585,10 +641,12 @@
     if(!placementResult) return;
     navigate("lesson-setup");
   }
-  function beginLesson(minutes){
-    const questions = drawQuestions(computeQuestionCount(minutes));
+  function beginLesson(minutes, focusKey){
+    const focus = parseFocus(focusKey);
+    const questions = drawQuestions(computeQuestionCount(minutes), focus);
     activeLesson = {
       id: uid(), level: moduleLevel, durationMinutes: minutes,
+      focus: focus ? focusKey : "",
       questions: questions, index: 0,
       answers: new Array(questions.length).fill(null),
       startedAt: Date.now()
@@ -639,6 +697,7 @@
     const record = {
       id: activeLesson.id, date: Date.now(), level: activeLesson.level,
       durationMinutes: activeLesson.durationMinutes,
+      focus: activeLesson.focus || "",
       correct: correct, total: qs.length, scorePercent: scorePercent,
       breakdown: breakdown, questions: reviewQuestions
     };
@@ -652,7 +711,7 @@
   }
   function repeatLesson(){
     if(!lastLessonResult) return goLessonSetup();
-    beginLesson(lastLessonResult.durationMinutes);
+    beginLesson(lastLessonResult.durationMinutes, lastLessonResult.focus || "");
   }
   function adjustModuleLevel(delta){
     moduleLevel = clamp(moduleLevel + delta, 1, 5);
@@ -1067,19 +1126,46 @@
   }
 
   function renderLessonSetup(){
-    const count = computeQuestionCount(selectedDuration);
+    const focus = parseFocus(selectedFocus);
+    const requested = computeQuestionCount(selectedDuration);
+    const available = focus ? focusQuestionCount(focus) : requested;
+    const count = Math.min(requested, available);
+
+    const groups = {};
+    lessonSkills().forEach(function(s){ (groups[s.cat] = groups[s.cat] || []).push(s); });
+    const focusOptions = Object.keys(groups).map(function(cat){
+      return '<optgroup label="' + esc(CATEGORY_NAMES[cat] || cat) + '">' +
+        groups[cat].map(function(s){
+          return '<option value="' + esc(s.key) + '" ' + (s.key === selectedFocus ? "selected" : "") + ">" +
+            esc(s.sub) + " · level " + Math.round(s.level) + "</option>";
+        }).join("") +
+      "</optgroup>";
+    }).join("");
+
     return atmosphere() + headerBar({}) +
       '<main id="app-main" class="app-main screen">' +
         '<div class="stack-sm"><span class="eyebrow">Adaptive practice · Level ' + moduleLevel + "</span><h1 class=\"title-lg\">Set up your lesson</h1></div>" +
         '<div class="card stack">' +
+          '<div class="field">' +
+            '<label for="focus-select">What do you want to work on?</label>' +
+            '<select id="focus-select" class="select">' +
+              '<option value="" ' + (focus ? "" : "selected") + ">Mixed — all sub-skills</option>" +
+              focusOptions +
+            "</select>" +
+          "</div>" +
           '<div class="field">' +
             '<label for="duration-select">How long do you want to practice?</label>' +
             '<select id="duration-select" class="select" data-action="change-duration">' +
               DURATION_OPTIONS.map(function(m){ return '<option value="' + m + '" ' + (m === selectedDuration ? "selected" : "") + ">" + m + " minutes</option>"; }).join("") +
             "</select>" +
           "</div>" +
-          '<div class="card-soft row-between">' +
-            '<span class="sub">Estimated length</span><span style="font-weight:800;">~' + count + " questions</span>" +
+          '<div class="card-soft stack-sm">' +
+            '<div class="row-between">' +
+              '<span class="sub">Estimated length</span><span style="font-weight:800;">~' + count + (count === 1 ? " question" : " questions") + "</span>" +
+            "</div>" +
+            (focus && available < requested
+              ? '<span class="sub" style="font-size:.82rem;">That\'s every question ' + esc(focus.sub) + " has in the bank.</span>"
+              : "") +
           "</div>" +
           '<button class="btn btn-primary" data-action="begin-lesson">Begin lesson</button>' +
         "</div>" +
@@ -1243,7 +1329,7 @@
       case "reset-all": confirmResetAll(); break;
       case "dismiss-standalone-notice": dismissStandaloneNotice(); break;
       case "open-lessons": openLessons(); break;
-      case "begin-lesson": beginLesson(selectedDuration); break;
+      case "begin-lesson": beginLesson(selectedDuration, selectedFocus); break;
       case "select-lesson": selectLessonAnswer(parseInt(index, 10)); break;
       case "next-lesson": nextLessonQuestion(); break;
       case "resume-lesson": resumeActiveLesson(); break;
@@ -1258,6 +1344,10 @@
   document.addEventListener("change", function(e){
     if(e.target && e.target.id === "duration-select"){
       selectedDuration = parseInt(e.target.value, 10);
+      render();
+    }
+    if(e.target && e.target.id === "focus-select"){
+      selectedFocus = e.target.value;
       render();
     }
   });
