@@ -63,6 +63,25 @@
   });
   function getPassageFor(q){ return q.passage || (q.passageId ? PASSAGES[q.passageId] : null); }
 
+  /* ---------------- unified lesson pool ---------------- */
+  // Lessons draw from the placement pool's active categories plus the
+  // curated grammar bank. Grammar-bank items carry a 1-5 level and no
+  // category of their own, so they're normalized onto the same 1-10
+  // difficulty scale and their type becomes their category. Their
+  // sub-skill names are deliberately left alone rather than forced into
+  // the placement taxonomy — they're more specific, and seeding falls
+  // back to the category ceiling for the ones placement doesn't cover.
+  const LESSON_POOL = PLACEMENT_POOL
+    .filter(function(q){ return CATEGORY_NAMES[q.category]; })
+    .concat(GRAMMAR_BANK.map(function(q){
+      return {
+        id: q.id, category: q.type, type: q.type, sub: q.sub,
+        difficulty: clamp(q.level * 2, 1, 10),
+        prompt: q.prompt, options: q.options,
+        correctIndex: q.correctIndex, explanation: q.explanation
+      };
+    }));
+
   /* ---------------- state ---------------- */
   let placementResult = load("placementResult", null);
   let placementProgress = load("placementProgress", null);
@@ -72,6 +91,8 @@
   let lastLessonResult = load("lastLessonResult", null);
   let dismissedStandaloneNotice = load("dismissedStandaloneNotice", false);
   let profile = load("profile", null);
+  let skillState = load("skillState", {});
+  let categoryState = load("categoryState", {});
   let profileError = "";
   let profileFormAge = profile ? String(profile.age) : "";
   let profileFormEducation = profile ? profile.education : "";
@@ -379,22 +400,161 @@
   function computeQuestionCount(minutes){
     return clamp(Math.round((minutes * 60) / 42), 3, 90);
   }
-  function drawQuestions(level, count){
-    const pool = GRAMMAR_BANK.filter(function(q){ return q.level === level; });
-    let bag = [];
-    while(bag.length < count){ bag = bag.concat(shuffle(pool)); }
-    bag = bag.slice(0, count);
-    return bag.map(function(orig){
+  /* ---- per-sub-skill adaptivity (independent of the placement engine) ----
+     Every (category, sub-skill) pair carries its own difficulty estimate on
+     the same 1-10 scale the pool is rated on. After each answer the estimate
+     moves by an asymmetric step that settles where the learner is getting
+     roughly SKILL_TARGET_ACCURACY right: a hit nudges up by (1 - target), a
+     miss drops by target, so at equilibrium the ups and downs cancel at an
+     85% success rate rather than the 50% a symmetric step would converge on. */
+  const SKILL_TARGET_ACCURACY = 0.85;
+  const SKILL_UP_STEP = 1 - SKILL_TARGET_ACCURACY;
+  const SKILL_DOWN_STEP = SKILL_TARGET_ACCURACY;
+  const SKILL_CONFIDENCE_HALFLIFE_DAYS = 30;
+  // Spaced repetition, indexed by consecutive correct answers on that
+  // sub-skill. A miss resets to 0, i.e. due immediately, so missed
+  // sub-skills come back in the very next lesson and then stretch out.
+  const SKILL_DUE_HOURS = [0, 20, 72, 168, 384, 840];
+  const HOUR_MS = 3600 * 1000;
+  const DAY_MS = 24 * HOUR_MS;
+
+  // A single sub-skill is only sampled a few times across a run of lessons —
+  // far too thin for its own estimate to steer difficulty on its own. So each
+  // category also carries an estimate, updated on every answer in that
+  // category and therefore calibrating an order of magnitude faster, and a
+  // sub-skill's served difficulty is blended between the two in proportion to
+  // how much evidence that sub-skill actually has. SKILL_EVIDENCE_HALF is the
+  // number of observations at which a sub-skill trusts itself as much as its
+  // category; PLACEMENT_PRIOR_N is how many observations the placement test's
+  // own reading of that sub-skill is treated as being worth.
+  const SKILL_EVIDENCE_HALF = 5;
+  const PLACEMENT_PRIOR_N = 3;
+
+  function skillKey(cat, sub){ return cat + "::" + sub; }
+  function categorySeedLevel(cat){
+    const cs = placementResult && placementResult.categoryScores && placementResult.categoryScores[cat];
+    // Results saved before the scoring engine have no per-category data.
+    return cs ? clamp(cs.ceiling, 1, 10) : clamp((moduleLevel || 3) * 2, 1, 10);
+  }
+  function getCategory(cat){
+    if(!categoryState[cat]){
+      categoryState[cat] = { level: categorySeedLevel(cat), seen:0, correct:0 };
+    }
+    return categoryState[cat];
+  }
+  // Starting difficulty comes from the placement test: the category ceiling,
+  // nudged by how that specific sub-skill went where placement measured it.
+  function getSkill(cat, sub){
+    const key = skillKey(cat, sub);
+    if(!skillState[key]){
+      const cs = placementResult && placementResult.categoryScores && placementResult.categoryScores[cat];
+      const measured = cs && cs.subSkills && cs.subSkills[sub];
+      const adj = !measured ? 0 : measured.pct >= 80 ? 1 : measured.pct >= 50 ? 0 : measured.pct >= 25 ? -1 : -2;
+      skillState[key] = {
+        level: clamp(categorySeedLevel(cat) + adj, 1, 10),
+        priorN: measured ? PLACEMENT_PRIOR_N : 0,
+        seen:0, correct:0, reps:0, missStreak:0, lastSeenAt:0, dueAt:0
+      };
+    }
+    return skillState[key];
+  }
+  // What difficulty to actually serve: the sub-skill's own estimate and its
+  // category's, weighted by the sub-skill's accumulated evidence.
+  function servedLevel(cat, sub){
+    const s = getSkill(cat, sub);
+    const evidence = s.seen + (s.priorN || 0);
+    const w = evidence / (evidence + SKILL_EVIDENCE_HALF);
+    return clamp(w * s.level + (1 - w) * getCategory(cat).level, 1, 10);
+  }
+  // Mastery decays with time since the sub-skill was last tested, so a stale
+  // estimate loses confidence and earns a recheck.
+  function skillConfidence(s){
+    if(!s.seen || !s.lastSeenAt) return 0;
+    return Math.pow(0.5, ((Date.now() - s.lastSeenAt) / DAY_MS) / SKILL_CONFIDENCE_HALFLIFE_DAYS);
+  }
+  function skillPriority(s){
+    const coverage = 1 / (1 + s.seen);                                        // barely practised yet
+    const overdue = s.dueAt ? clamp((Date.now() - s.dueAt) / DAY_MS, 0, 3) : 1; // spaced repetition
+    const decay = 1 - skillConfidence(s);                                     // mastery decay
+    const missed = s.missStreak > 0 ? 1 : 0;                                  // recently missed
+    return coverage * 1.4 + overdue * 1.2 + decay + missed * 0.8 + Math.random() * 0.6;
+  }
+  function nearestLessonQuestion(cat, sub, target, usedIds){
+    const candidates = LESSON_POOL.filter(function(q){
+      return q.category === cat && q.sub === sub && !usedIds[q.id];
+    });
+    if(!candidates.length) return null;
+    let best = Infinity;
+    candidates.forEach(function(q){
+      const dist = Math.abs(q.difficulty - target);
+      if(dist < best) best = dist;
+    });
+    const tier = candidates.filter(function(q){ return Math.abs(q.difficulty - target) === best; });
+    return tier[Math.floor(Math.random() * tier.length)];
+  }
+  function drawQuestions(count){
+    const seen = {};
+    const skills = [];
+    LESSON_POOL.forEach(function(q){
+      const key = skillKey(q.category, q.sub);
+      if(seen[key]) return;
+      seen[key] = true;
+      skills.push({ cat:q.category, sub:q.sub });
+    });
+    const ranked = skills.map(function(s){
+      return { cat:s.cat, sub:s.sub, score: skillPriority(getSkill(s.cat, s.sub)) };
+    }).sort(function(a, b){ return b.score - a.score; });
+
+    const usedIds = {};
+    const picked = [];
+    // Walk the priority order, wrapping for lessons longer than the
+    // sub-skill list; a sub-skill whose questions are used up is skipped.
+    for(let i = 0; picked.length < count && i < ranked.length * 6; i++){
+      const s = ranked[i % ranked.length];
+      const q = nearestLessonQuestion(s.cat, s.sub, servedLevel(s.cat, s.sub), usedIds);
+      if(!q) continue;
+      usedIds[q.id] = true;
+      picked.push(q);
+    }
+    save("skillState", skillState);
+    save("categoryState", categoryState);
+
+    return picked.map(function(orig){
       const pairs = orig.options.map(function(text, i){ return { text:text, correct: i === orig.correctIndex }; });
+      // "NO CHANGE" style items keep option A as the base sentence; others shuffle for variety
       const shuffled = orig.type === "error" ? pairs : shuffle(pairs);
-      // keep "NO CHANGE" style items in original order for error-ID items so option A is always the base sentence context is preserved naturally; blanks get shuffled for variety
       const correctIndex = shuffled.findIndex(function(p){ return p.correct; });
       return {
-        sourceId: orig.id, level: orig.level, type: orig.type, sub: orig.sub,
+        sourceId: orig.id, category: orig.category, difficulty: orig.difficulty,
+        type: orig.type, sub: orig.sub,
         prompt: orig.prompt, options: shuffled.map(function(p){ return p.text; }),
         correctIndex: correctIndex, explanation: orig.explanation
       };
     });
+  }
+  function recordSkillAnswer(q, isCorrect){
+    if(!q.category) return; // lesson started before per-sub-skill tracking existed
+    const s = getSkill(q.category, q.sub);
+    const c = getCategory(q.category);
+    const now = Date.now();
+    const step = isCorrect ? SKILL_UP_STEP : -SKILL_DOWN_STEP;
+    s.seen++;
+    c.seen++;
+    if(isCorrect){
+      s.correct++;
+      c.correct++;
+      s.reps = Math.min(s.reps + 1, SKILL_DUE_HOURS.length - 1);
+      s.missStreak = 0;
+    } else {
+      s.reps = 0;
+      s.missStreak++;
+    }
+    s.level = clamp(s.level + step, 1, 10);
+    c.level = clamp(c.level + step, 1, 10);
+    s.lastSeenAt = now;
+    s.dueAt = now + SKILL_DUE_HOURS[s.reps] * HOUR_MS;
+    save("skillState", skillState);
+    save("categoryState", categoryState);
   }
   function goLessonSetup(){ navigate("lesson-setup"); }
   function openLessons(){
@@ -402,12 +562,11 @@
     navigate("lesson-setup");
   }
   function beginLesson(minutes){
-    const count = computeQuestionCount(minutes);
-    const questions = drawQuestions(moduleLevel, count);
+    const questions = drawQuestions(computeQuestionCount(minutes));
     activeLesson = {
       id: uid(), level: moduleLevel, durationMinutes: minutes,
       questions: questions, index: 0,
-      answers: new Array(count).fill(null),
+      answers: new Array(questions.length).fill(null),
       startedAt: Date.now()
     };
     save("activeLesson", activeLesson);
@@ -419,6 +578,7 @@
     const isCorrect = idx === q.correctIndex;
     activeLesson.answers[activeLesson.index] = { selectedIndex: idx, isCorrect: isCorrect };
     save("activeLesson", activeLesson);
+    recordSkillAnswer(q, isCorrect);
     render();
   }
   function nextLessonQuestion(){
@@ -473,6 +633,16 @@
   function adjustModuleLevel(delta){
     moduleLevel = clamp(moduleLevel + delta, 1, 5);
     save("moduleLevel", moduleLevel);
+    // Questions are chosen per sub-skill now, so this manual dial shifts
+    // every tracked estimate rather than picking a fixed bank level.
+    Object.keys(skillState).forEach(function(k){
+      skillState[k].level = clamp(skillState[k].level + delta * 2, 1, 10);
+    });
+    Object.keys(categoryState).forEach(function(k){
+      categoryState[k].level = clamp(categoryState[k].level + delta * 2, 1, 10);
+    });
+    save("skillState", skillState);
+    save("categoryState", categoryState);
     render();
   }
   function resumeActiveLesson(){ navigate("lesson"); }
@@ -496,7 +666,9 @@
   }
   function confirmResetAll(){
     if(!window.confirm("Reset all progress? This clears your placement result, level, and full lesson history. This can't be undone.")) return;
-    ["placementResult","placementProgress","moduleLevel","activeLesson","history","lastLessonResult"].forEach(function(k){ save(k, null); });
+    ["placementResult","placementProgress","moduleLevel","activeLesson","history","lastLessonResult","skillState","categoryState"].forEach(function(k){ save(k, null); });
+    skillState = {};
+    categoryState = {};
     placementResult = null; placementProgress = null; moduleLevel = null;
     activeLesson = null; history = []; lastLessonResult = null;
     showSettings = false;
@@ -657,7 +829,7 @@
       title: "2 · My lessons",
       subtitle: lessonsLocked
         ? "Complete your placement test to unlock this module."
-        : "Grammar &amp; Punctuation · Level " + moduleLevel + " · " + esc(LEVEL_NAMES[moduleLevel]),
+        : "Adaptive practice · Level " + moduleLevel + " · " + esc(LEVEL_NAMES[moduleLevel]),
       buttonLabel: lessonsLocked ? "Locked for now" : "Start a lesson",
       action: "open-lessons", primary: true, locked: lessonsLocked
     });
@@ -874,7 +1046,7 @@
     const count = computeQuestionCount(selectedDuration);
     return atmosphere() + headerBar({}) +
       '<main id="app-main" class="app-main screen">' +
-        '<div class="stack-sm"><span class="eyebrow">Grammar &amp; Punctuation · Level ' + moduleLevel + "</span><h1 class=\"title-lg\">Set up your lesson</h1></div>" +
+        '<div class="stack-sm"><span class="eyebrow">Adaptive practice · Level ' + moduleLevel + "</span><h1 class=\"title-lg\">Set up your lesson</h1></div>" +
         '<div class="card stack">' +
           '<div class="field">' +
             '<label for="duration-select">How long do you want to practice?</label>' +
