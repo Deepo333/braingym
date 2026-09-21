@@ -412,14 +412,23 @@
      sits at down / (up + down), so evening the two out would retune the
      system to 50%. At 85% accuracy misses simply arrive ~5.7x less often
      than hits, so each has to carry ~5.7x the weight or the level would
-     climb forever. What is free is the overall magnitude: SKILL_STEP_SCALE
-     shrinks both steps together, keeping the target exact while cutting how
-     much ground a bad streak gives away, so a short run of misses no longer
-     tanks a level for many lessons afterward. */
+     climb forever.
+
+     What is free is the overall magnitude, and it shrinks as evidence
+     accumulates rather than staying fixed. A brand new estimate takes the
+     full step, so a level still finds its mark quickly from its placement
+     seed; an estimate built over many lessons moves in small increments, so
+     a short run of misses no longer gives away several points of a 10-point
+     range. Scaling both steps by the same factor leaves the ratio, and
+     therefore the 85% target, exact at every size. */
   const SKILL_TARGET_ACCURACY = 0.85;
-  const SKILL_STEP_SCALE = 0.4;
-  const SKILL_UP_STEP = SKILL_STEP_SCALE * (1 - SKILL_TARGET_ACCURACY);
-  const SKILL_DOWN_STEP = SKILL_STEP_SCALE * SKILL_TARGET_ACCURACY;
+  const SKILL_UP_STEP = 1 - SKILL_TARGET_ACCURACY;
+  const SKILL_DOWN_STEP = SKILL_TARGET_ACCURACY;
+  const SKILL_STEP_KNEE = 12;  // observations at which the step is halved
+  const SKILL_STEP_FLOOR = 0.25;
+  function stepScale(seen){
+    return Math.max(SKILL_STEP_FLOOR, SKILL_STEP_KNEE / (SKILL_STEP_KNEE + seen));
+  }
   const SKILL_CONFIDENCE_HALFLIFE_DAYS = 30;
   // Spaced repetition, indexed by consecutive correct answers on that
   // sub-skill. A miss resets to 0, i.e. due immediately, so missed
@@ -548,6 +557,11 @@
     const c = getCategory(q.category);
     const now = Date.now();
     const step = isCorrect ? SKILL_UP_STEP : -SKILL_DOWN_STEP;
+    // Sized against the evidence each estimate had before this answer. The
+    // category has seen every answer in its four sub-skill groups, so it is
+    // the better established of the two and moves in smaller increments.
+    const skillStep = step * stepScale(s.seen);
+    const categoryStep = step * stepScale(c.seen);
     s.seen++;
     c.seen++;
     if(isCorrect){
@@ -559,8 +573,8 @@
       s.reps = 0;
       s.missStreak++;
     }
-    s.level = clamp(s.level + step, 1, 10);
-    c.level = clamp(c.level + step, 1, 10);
+    s.level = clamp(s.level + skillStep, 1, 10);
+    c.level = clamp(c.level + categoryStep, 1, 10);
     s.lastSeenAt = now;
     s.dueAt = now + SKILL_DUE_HOURS[s.reps] * HOUR_MS;
     save("skillState", skillState);
