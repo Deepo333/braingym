@@ -1081,7 +1081,13 @@
       '<main id="app-main" class="app-main screen">' +
         progressBar(idx + 1, activeLesson.questions.length) +
         '<div class="card stack">' +
-          '<span class="pill pill-rose">' + esc(q.sub) + "</span>" +
+          '<div class="row-between" style="flex-wrap:wrap; row-gap:8px;">' +
+            '<span class="pill pill-rose">' + esc(q.sub) + "</span>" +
+            // Lessons in progress from before per-question difficulty was stored carry no value.
+            (typeof q.difficulty === "number"
+              ? '<span class="pill pill-beige" style="white-space:nowrap;">Difficulty ' + q.difficulty + "/10</span>"
+              : "") +
+          "</div>" +
           '<div class="prompt-box">' + renderPrompt(q.prompt) + "</div>" +
           choiceListHTML({ options:q.options, correctIndex:q.correctIndex, selectedIndex: answer ? answer.selectedIndex : null, locked:locked, action:"select-lesson" }) +
           feedback +
